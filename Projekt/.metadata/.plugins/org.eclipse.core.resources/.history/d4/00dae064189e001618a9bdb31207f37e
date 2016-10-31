@@ -1,0 +1,70 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+public class Inquiry implements Observer {
+
+	private JFrame frame;
+	private JTextField textField_1;
+	private ServerState state;
+	private Listener listener;
+	
+	public Inquiry(ServerState _state) {
+		state = _state;
+		state.addObserver(this);
+		listener= new Listener(_state);
+		initialize();
+		frame.setVisible(true);
+	
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 * 
+	 * @param textField_1
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		textField_1 = new JTextField();
+		textField_1.setBounds(12, 12, 273, 248);
+		textField_1.setHorizontalAlignment(SwingConstants.LEFT);
+		frame.getContentPane().add(textField_1);
+		textField_1.setColumns(10);
+
+		JButton inquiryButton= new JButton("Inquiry");
+		inquiryButton.setBounds(297, 170, 117, 25);
+		inquiryButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		inquiryButton.setName("buttonInquiry");
+		inquiryButton.addActionListener(this.listener);
+		frame.getContentPane().add(inquiryButton);
+		
+		JButton clearButton = new JButton("Clear");
+		clearButton.setBounds(297, 34, 117, 25);
+		clearButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		clearButton.setName("buttonClear");
+		clearButton.addActionListener(this.listener);
+		frame.getContentPane().add(clearButton);
+
+	}
+	
+	
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		System.out.println("lol");
+	//	ArrayList<String> inquiredDevices= (ArrayList<String>) arg1;
+//		System.out.println("LoL");
+	}
+
+}

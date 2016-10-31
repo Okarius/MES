@@ -1,0 +1,29 @@
+import java.util.ArrayList;
+import java.util.Observable;
+
+public class ServerState extends Observable {
+	ArrayList<String> inquiredDevices;
+	public ServerState(){
+		inquiredDevices = new ArrayList<String>();
+	}
+	/*
+	*This funktion performs inquire
+	*It is called after "inquire" button is pressed
+	*/
+	public void inquire(){
+		inquiredDevices.add("lol");
+		changeData(this.inquiredDevices);
+	}
+	
+	//this funktion resets model
+	public void reset(){
+		inquiredDevices.clear();
+	}
+	
+    void changeData(Object data) {
+        setChanged(); // the two methods of Observable class
+        notifyObservers(data);
+    }
+
+	
+}

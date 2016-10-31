@@ -1,0 +1,8 @@
+
+public class ServerState {
+	String[] inquiredShit;
+	public ServerState(){
+		
+	}
+	
+}

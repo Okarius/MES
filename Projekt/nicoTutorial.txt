@@ -1,0 +1,12 @@
+1.  Download BLuez
+
+in ordner gehen und
+sudo ./configure
+ausführen. Da kommen ein haufen meldungen was die alles fehlt, nacheinander alles installieren und immer wieder ./configure.
+
+
+
+Dann kannst Loslegen.
+dieses Avetana oder Bluecove ist schon erledigt das ist die .jar im Ordner
+Würde sagen morgen mach ich ein Git projekt auf
+

@@ -1,0 +1,18 @@
+import java.util.ArrayList;
+
+public class ServerState {
+	ArrayList<String> inquiredDevices;
+	public ServerState(){
+		inquiredDevices = new ArrayList<String>();
+	}
+	//This funktion performs inquire
+	public void inquire(){
+		inquiredDevices.add("lol");
+	}
+	
+	//this funktion resets model
+	public void reset(){
+		
+	}
+	
+}

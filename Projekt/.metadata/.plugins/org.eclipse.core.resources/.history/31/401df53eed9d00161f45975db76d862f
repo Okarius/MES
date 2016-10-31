@@ -1,0 +1,13 @@
+import javax.swing.*;
+
+public class View {
+
+	/**
+	 * @param args
+	 */
+	psublic static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

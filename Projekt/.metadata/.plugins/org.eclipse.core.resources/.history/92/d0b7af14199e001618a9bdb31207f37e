@@ -1,0 +1,11 @@
+
+public class main {
+
+	public static void main(String[] args) {
+		System.out.println("start");
+		ServerState state = new ServerState();
+		Inquiry inquiry = new Inquiry(state);
+		System.out.println("stop");
+	}
+
+}

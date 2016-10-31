@@ -1,0 +1,27 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+
+public class Listener implements ActionListener {
+	ServerState state;
+	
+	public Listener(ServerState _state) {
+		state = _state;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String name = ((JButton) e.getSource()).getName();
+		switch (name) {
+		case "buttonInquiry":
+			state.inquire();
+			break;
+		case "buttonClear":
+			break;
+		default:
+			break;
+		}
+	}
+
+}

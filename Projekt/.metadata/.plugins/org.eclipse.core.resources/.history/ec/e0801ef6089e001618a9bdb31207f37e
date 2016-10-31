@@ -1,0 +1,8 @@
+
+public class ServerState {
+	String[] inquiredDevices;
+	public ServerState(){
+		
+	}
+	
+}

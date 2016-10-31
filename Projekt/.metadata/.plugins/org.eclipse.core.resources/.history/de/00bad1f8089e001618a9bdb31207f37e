@@ -1,0 +1,8 @@
+
+public class ServerState {
+	ArrayLi inquiredDevices;
+	public ServerState(){
+		
+	}
+	
+}
