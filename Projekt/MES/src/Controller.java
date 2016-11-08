@@ -24,6 +24,9 @@ public class Controller implements ActionListener {
 		case "buttonClear":
 			state.reset();
 			break;
+		case "buttonWait":
+			state.echoServer();
+			break;	
 		default:
 			break;
 		}

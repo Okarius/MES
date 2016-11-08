@@ -1,4 +1,8 @@
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Vector;
@@ -9,12 +13,29 @@ import javax.bluetooth.DiscoveryListener;
 import javax.bluetooth.LocalDevice;
 import javax.bluetooth.RemoteDevice;
 import javax.bluetooth.ServiceRecord;
+import javax.bluetooth.UUID;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
+import javax.microedition.io.StreamConnectionNotifier;
 
 public class ServerState extends Observable {
 	private ArrayList<String> inquiredDevices;
 
+	public final UUID uuid = new UUID("0000110100001000800000805F9B34FB", false); // it
+																					// can
+																					// be
+																					// generated
+																					// randomly
+	public final String name = "Echo Server"; // the name of the service
+	public final String url = "btspp://localhost:" + uuid // the service url
+			+ ";name=" + name + ";authenticate=false;encrypt=false;";
+	LocalDevice local = null;
+	StreamConnectionNotifier server = null;
+	StreamConnection conn = null;
+
 	public ServerState() {
 		inquiredDevices = new ArrayList<String>();
+
 	}
 
 	/*
@@ -31,20 +52,18 @@ public class ServerState extends Observable {
 			/* Create an object of DiscoveryListener */
 			DiscoveryListener listener = new DiscoveryListener() {
 				public void deviceDiscovered(RemoteDevice btDevice, DeviceClass cod) {
-					//Get devices paired with system or in range(Without Pair)
+					// Get devices paired with system or in range(Without Pair)
 					try {
 						devicesDiscovered.add(btDevice.getFriendlyName(true));
 					} catch (IOException e) {
-
 						e.printStackTrace();
 					}
-
 				}
+
 				public void inquiryCompleted(int discType) {
 					/* Notify thread when inquiry completed */
 					synchronized (inquiryCompletedEvent) {
 						inquiryCompletedEvent.notifyAll();
-
 					}
 				}
 
@@ -73,21 +92,49 @@ public class ServerState extends Observable {
 		inquiredDevices.addAll(devicesDiscovered);
 		changeData(this.inquiredDevices);
 		System.out.println(devicesDiscovered);
-		//		return devicesDiscovered;
-	
-	
+		// return devicesDiscovered;
+
 	}
 
 	// this funktion resets model
 	public void reset() {
 		inquiredDevices.clear();
 		changeData(this.inquiredDevices);
-
 	}
 
 	void changeData(Object data) {
 		setChanged(); // the two methods of Observable class
 		notifyObservers(data);
+	}
+
+	public void echoServer() {
+		try {
+			System.out.println("Setting device to be discoverable...");
+			local = LocalDevice.getLocalDevice();
+			local.setDiscoverable(DiscoveryAgent.GIAC);
+			System.out.println("Start advertising service...");
+			server = (StreamConnectionNotifier) Connector.open(url);
+			System.out.println("Waiting for incoming connection...");
+			conn = server.acceptAndOpen();
+			System.out.println("Client Connected...");
+			DataInputStream din = new DataInputStream(conn.openInputStream());
+			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
+			System.out.println("got input");
+			boolean f = true;
+			while (true) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(din));
+				String lineRead = br.readLine();
+				if (lineRead != null)
+					System.out.println(lineRead);
+				if (f) {
+					f = false;
+				}
+				out.write(lineRead.toUpperCase().getBytes());
+			}
+
+		} catch (Exception e) {
+			System.out.println("Exception Occured: " + e.toString());
+		}
 	}
 
 }

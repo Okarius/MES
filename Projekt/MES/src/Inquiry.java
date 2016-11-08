@@ -14,7 +14,7 @@ public class Inquiry implements Observer {
 	private JFrame frame;
 	private JTextField textField;
 	//private ServerState state;
-	private JButton inquiryButton, clearButton;
+	private JButton inquiryButton, clearButton, waitButton;
 	public Inquiry() {
 	//	state.addObserver(this);
 		initialize();
@@ -50,6 +50,12 @@ public class Inquiry implements Observer {
 		clearButton.setHorizontalAlignment(SwingConstants.RIGHT);
 		clearButton.setName("buttonClear");
 		frame.getContentPane().add(clearButton);
+		
+		waitButton = new JButton("Waiting for Connection");
+		waitButton.setBounds(297,100, 117, 25);
+		waitButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		waitButton.setName("buttonWait");
+		frame.getContentPane().add(waitButton);
 
 	}
 
@@ -70,6 +76,7 @@ public class Inquiry implements Observer {
 	public void addController(Controller controller) {
 		inquiryButton.addActionListener(controller);
 		clearButton.addActionListener(controller);
+		waitButton.addActionListener(controller);
 	}
 
 }
