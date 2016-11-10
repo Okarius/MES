@@ -1,0 +1,151 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import Model.Server;
+
+import javax.swing.JLabel;
+
+public class View implements Observer {
+
+	private JFrame frame;
+	private JTextField textField;
+	// private ServerState state;
+	private JButton inquiryButton, clearButton, waitButton, viewDebugButton, viewInquiredButton, viewConnectionsButton;
+
+	public View() {
+		// state.addObserver(this);
+		initialize();
+		frame.setVisible(true);
+
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 * 
+	 * @param textField_1
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(200, 200, 900, 600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+
+		JLabel lblFunctions = new JLabel("Functions");
+		lblFunctions.setBounds(394, 37, 70, 15);
+		frame.getContentPane().add(lblFunctions);
+
+		JLabel lblView = new JLabel("View");
+		lblView.setBounds(508, 37, 70, 15);
+		frame.getContentPane().add(lblView);
+
+		textField = new JTextField();
+		textField.setBounds(12, 12, 332, 511);
+		textField.setHorizontalAlignment(SwingConstants.LEFT);
+		frame.getContentPane().add(textField);
+		textField.setColumns(10);
+
+		inquiryButton = new JButton("Inquiry");
+		inquiryButton.setBounds(369, 182, 117, 25);
+		inquiryButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		inquiryButton.setName("inquiryButton");
+		frame.getContentPane().add(inquiryButton);
+
+		clearButton = new JButton("ResetServer");
+		clearButton.setBounds(369, 86, 117, 25);
+		clearButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		clearButton.setName("clearButton");
+		frame.getContentPane().add(clearButton);
+
+		waitButton = new JButton("Waiting for Connection");
+		waitButton.setBounds(369, 134, 117, 25);
+		waitButton.setHorizontalAlignment(SwingConstants.RIGHT);
+		waitButton.setName("waitButton");
+		frame.getContentPane().add(waitButton);
+
+		viewInquiredButton = new JButton("Inquired");
+		viewInquiredButton.setBounds(499, 86, 117, 25);
+		viewInquiredButton.setName("viewInquiryButton");
+		frame.getContentPane().add(viewInquiredButton);
+
+		viewConnectionsButton = new JButton("Connections");
+		viewConnectionsButton.setBounds(498, 134, 117, 25);
+		clearButton.setName("viewConnectionButton");
+		frame.getContentPane().add(viewConnectionsButton);
+
+		viewDebugButton = new JButton("DebugInfos");
+		viewDebugButton.setBounds(499, 182, 117, 25);
+		clearButton.setName("viewDebugButton");
+		frame.getContentPane().add(viewDebugButton);
+
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		ArrayList<String> inquiredDevices = (ArrayList<String>) arg1;
+		if (inquiredDevices.size() > 0) {
+			String text = "";
+			for (String i : inquiredDevices) {
+				text += i + "\n";
+			}
+			textField.setText(text);
+		} else {
+			textField.setText("");
+		}
+	}
+
+	public void addController(Controller controller) {
+		inquiryButton.addActionListener(controller);
+		clearButton.addActionListener(controller);
+		waitButton.addActionListener(controller);
+		viewConnectionsButton.addActionListener(controller);
+		viewDebugButton.addActionListener(controller);
+		viewInquiredButton.addActionListener(controller);
+
+	}
+
+	public void viewInquiry(Server server) {
+		ArrayList<String> inquiredDevices = server.getInquiredDevices();
+		if (inquiredDevices.size() > 0) {
+			String text = "";
+			for (String i : inquiredDevices) {
+				text += i + "\n";
+			}
+			textField.setText(text);
+		} else {
+			textField.setText("");
+		}
+	}
+
+	public void viewConnection(Server server) {
+		textField.setText("");
+	}
+
+	public void viewDebug(Server server) {
+		textField.setText("");
+	}
+
+	public void setView(String setMe, Server server) {
+		switch (setMe) {
+		case "viewInquiry":
+			viewInquiry(server);
+			break;
+		case "viewConnection":
+			viewConnection(server);
+			break;
+		case "viewDebug":
+			viewDebug(server);
+			break;
+
+		default:
+			break;
+		}
+	}
+}

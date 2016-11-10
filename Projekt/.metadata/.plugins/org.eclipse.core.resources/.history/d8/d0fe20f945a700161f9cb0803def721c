@@ -1,0 +1,66 @@
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import javax.bluetooth.DiscoveryAgent;
+import javax.bluetooth.LocalDevice;
+import javax.bluetooth.UUID;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
+import javax.microedition.io.StreamConnectionNotifier;
+
+public class ClientCommunication implements Runnable {
+
+	private StreamConnection conn;
+
+	public ClientCommunication(StreamConnection connection) {
+		conn = connection;
+	}
+
+	@Override
+	public void run() {
+		try {
+			System.out.println("Client Connected...");
+			DataInputStream din = new DataInputStream(conn.openInputStream());
+			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
+			System.out.println("got input");
+			boolean firstMessage = true;
+			while (true) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(din));
+				String lineRead = br.readLine();
+				if (lineRead != null)
+					if (!firstMessage) {
+						respondToClient(out, lineRead);
+					}
+				if (firstMessage) {
+					out.write(("1;TelefonDienst" + "\n").getBytes());
+					firstMessage = false;
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Exception Occured: " + e.toString());
+		}
+	}
+
+	public void startThis() {
+		Thread t = new Thread(this);
+		t.start();
+	}
+
+	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
+		String service = lineRead.split(";")[0];
+		switch (service) {
+		case "Telefondienst":
+			PhoneNumberHandler phoneNumberHandler = new PhoneNumberHandler();
+			String NumberName = lineRead.split(";")[1];
+			out.write((phoneNumberHandler.getNumberByFirstName(NumberName) + "\n").getBytes());
+			break;
+		default:
+			out.write(("UNKOWN SERVICE " + service + "\n").getBytes());
+			break;
+		}
+	}
+
+}

@@ -1,0 +1,79 @@
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import javax.bluetooth.DiscoveryAgent;
+import javax.bluetooth.LocalDevice;
+import javax.bluetooth.UUID;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
+import javax.microedition.io.StreamConnectionNotifier;
+
+public class ClientCommunication implements Runnable {
+	public final UUID uuid = new UUID("0000110100001000800000805F9B34FB", false);
+	public final String name = "Echo Server"; // the name of the service
+	public final String url = "btspp://localhost:" + uuid // the service url
+			+ ";name=" + name + ";authenticate=false;encrypt=false;";
+	LocalDevice local = null;
+	StreamConnectionNotifier server = null;
+	StreamConnection conn = null;
+	private Thread t;
+
+
+	@Override
+	public void run() {
+		try {
+			System.out.println("Setting device to be discoverable...");
+			local = LocalDevice.getLocalDevice();
+			local.setDiscoverable(DiscoveryAgent.GIAC);
+			System.out.println("Start advertising service...");
+			server = (StreamConnectionNotifier) Connector.open(url);
+			System.out.println("Waiting for incoming connection...");
+			conn = server.acceptAndOpen();
+			System.out.println("Client Connected...");
+			DataInputStream din = new DataInputStream(conn.openInputStream());
+			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
+			System.out.println("got input");
+			boolean firstMessage = true;
+			while (true) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(din));
+				String lineRead = br.readLine();
+				if (lineRead != null)
+					if (!firstMessage) {
+						respondToClient(out, lineRead);
+					}
+				if (firstMessage) {
+					out.write(("1;TelefonDienst" + "\n").getBytes());
+					firstMessage = false;
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Exception Occured: " + e.toString());
+		}
+	}
+
+	public void start() {
+		System.out.println("Starting " + threadName);
+		if (t == null) {
+			t = new Thread(this, threadName);
+			t.start();
+		}
+	}
+	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
+		String service = lineRead.split(";")[0];
+		switch (service) {
+		case "Telefondienst":
+			PhoneNumberHandler phoneNumberHandler = new PhoneNumberHandler();
+			String NumberName = lineRead.split(";")[1];
+			out.write((phoneNumberHandler.getNumberByFirstName(NumberName)+"\n").getBytes());
+			break;
+
+		default:
+			break;
+		}
+	}
+
+
+}

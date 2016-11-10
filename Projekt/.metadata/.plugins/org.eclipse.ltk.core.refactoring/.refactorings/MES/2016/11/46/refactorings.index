@@ -1,0 +1,12 @@
+1478782193350	Rename type 'ServerState'
+1478783077427	Move compilation unit
+1478783078726	Move compilation unit
+1478783080545	Move compilation unit
+1478783086391	Move compilation unit
+1478783245294	Rename type 'Inquiry'
+1478783288936	Rename field 'state'
+1478783500802	Rename type 'Inquire'
+1478783585292	Rename type 'ClientCommunication'
+1478784964976	Rename field 'inquiry'
+1478785190744	Delete element
+1478785198174	Rename compilation unit 'test.java'
