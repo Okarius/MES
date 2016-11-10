@@ -3,6 +3,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.invoke.SwitchPoint;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Vector;
@@ -92,8 +93,6 @@ public class ServerState extends Observable {
 		inquiredDevices.addAll(devicesDiscovered);
 		changeData(this.inquiredDevices);
 		System.out.println(devicesDiscovered);
-		// return devicesDiscovered;
-
 	}
 
 	// this funktion resets model
@@ -120,22 +119,37 @@ public class ServerState extends Observable {
 			DataInputStream din = new DataInputStream(conn.openInputStream());
 			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
 			System.out.println("got input");
-			boolean f = true;
+			boolean firstMessage = true;
 			while (true) {
 				BufferedReader br = new BufferedReader(new InputStreamReader(din));
 				String lineRead = br.readLine();
 				if (lineRead != null)
-					System.out.println(lineRead);
-				if (f) {
-					f = false;
+					if(!firstMessage){
+						respondToClient(out,lineRead);
+//						out.write((lineRead.toUpperCase()+"\n").getBytes());
+					}
+				if (firstMessage) {
+					echoServer();
+					out.write(("1;TelefonDienst"+"\n").getBytes());
+					firstMessage = false;
 				}
-				out.write((lineRead.toUpperCase()+"\n").getBytes());
-			}
 
+			}
 		} catch (Exception e) {
 			System.out.println("Exception Occured: " + e.toString());
 		}
 	}
 
-}
+	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
+		String service = lineRead.split(";")[0];
+		switch (lineRead) {
+		case "Telefondienst":
+			out.write(("10123125124"+"\n").getBytes());
+			break;
 
+		default:
+			break;
+		}
+	}
+
+}
