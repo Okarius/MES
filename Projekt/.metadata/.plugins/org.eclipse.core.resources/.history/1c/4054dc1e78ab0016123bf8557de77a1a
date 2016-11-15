@@ -1,0 +1,10 @@
+package Container;
+
+enum WHATMSG {
+	DEBUGMSG, CONNECTIONMSG
+}
+
+
+public class InternMessage {
+
+}

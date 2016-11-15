@@ -1,0 +1,12 @@
+package Model;
+
+import java.util.ArrayList;
+
+public class ConnectedDevices extends ArrayList<ConnectionStorage> {
+
+	public ArrayList<String> getMsgsById(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

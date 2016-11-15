@@ -1,0 +1,14 @@
+package Model;
+
+import java.util.ArrayList;
+
+public class ConnectedDevices extends ArrayList<ConnectionStorage> {
+
+	public ArrayList<String> getMsgsById(int id) {
+		for(ConnectionStorage d : this){
+			
+		}
+
+	}
+
+}

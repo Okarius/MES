@@ -1,0 +1,101 @@
+package Model;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.bluetooth.DiscoveryAgent;
+import javax.bluetooth.LocalDevice;
+import javax.bluetooth.UUID;
+import javax.microedition.io.Connector;
+import javax.microedition.io.StreamConnection;
+import javax.microedition.io.StreamConnectionNotifier;
+
+/**
+ * 
+ * @author root
+ *
+ */
+public class ClientConnectionRunnable extends Observable implements Runnable {
+
+	private StreamConnection conn;
+	private int id;
+
+	public ClientConnectionRunnable(StreamConnection connection, int id) {
+		conn = connection;
+		this.id = id;
+	}
+
+	@Override
+	public void run() {
+		try {
+			System.out.println("Client Connected...");
+			DataInputStream din = new DataInputStream(conn.openInputStream());
+			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
+			boolean firstMessage = true;
+			while (true) {
+				BufferedReader br = new BufferedReader(new InputStreamReader(din));
+				String lineRead = br.readLine();
+				changeData("from;" + id + ";" + lineRead);
+				if (lineRead != null)
+					if (!firstMessage) {
+						respondToClient(out, lineRead);
+					}
+				if (firstMessage) {
+					String sendMe = "0;TelefonDienst" + "\n";
+					out.write((sendMe).getBytes());
+					changeData("to;" + id + ";" + sendMe);
+					firstMessage = false;
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("Exception Occured: " + e.toString());
+		}
+	}
+
+	public void startThis() {
+		Thread t = new Thread(this);
+		t.start();
+	}
+
+	
+	public void cutHeader(String input) {
+		char[] _input = input.toCharArray();
+		char[] noHeader = new char[input.length()-2];
+		
+		for (int i = 0; i < input.length(); i++) {
+			noHeader[i] = _input[i+2];
+		}
+		
+	}
+	
+	
+	// Services; 0 == Telefondienst
+	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
+		String sendMe = "";
+		PhoneNumberHandler phoneNumberHandler = new PhoneNumberHandler();
+		String service = lineRead.split(";")[0];
+		switch (service) {
+		case "0":
+			String NumberName = lineRead.split(";")[1];
+			sendMe = (phoneNumberHandler.getNumberByFirstName(NumberName) + "\n");
+			break;
+		default:
+			sendMe = ("UNKOWN SERVICE " + service + "\n");
+			break;
+		}
+		changeData("to;" + id + ";" + sendMe);
+		out.write(sendMe.getBytes());
+
+	}
+
+	private void changeData(Object data) {
+		setChanged(); // the two methods of Observable class
+		notifyObservers(data);
+	}
+
+}

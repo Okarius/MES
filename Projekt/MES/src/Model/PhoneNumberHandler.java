@@ -1,10 +1,14 @@
 package Model;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * 
  * @author root
@@ -64,9 +68,10 @@ public class PhoneNumberHandler {
 		return "NUMBER NOT FOUND";
 	}
 
+
 	public String getNumberByFirstName(String firstName) {
 		for (CSVEntry e : CSVEntries) {
-			if (e.firstName.equals(firstName)) {
+			if (Arrays.equals(e.firstName.getBytes(), firstName.getBytes())) {
 				return e.number;
 			}
 		}

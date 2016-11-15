@@ -1,0 +1,21 @@
+package Model;
+
+import java.util.ArrayList;
+
+public class Device {
+	private String name;
+	private String mac;
+	private ArrayList<String> msgs;
+
+	public Device() {
+
+	}
+
+	public void saveMSGToDevice(String msg) {
+		msgs.add("Send: "+ msg);
+	}
+
+	public void saveMSGFromDevice(String msg) {
+
+	}
+}

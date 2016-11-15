@@ -1,0 +1,12 @@
+package Container;
+
+enum WhatMsg {
+	DEBUGMSG, CONNECTIONMSG
+}
+
+public class InternMessage {
+	public WhatMsg whatMsg;
+	public String msg;
+	public boolean firstMsg;
+	public int id;
+}

@@ -1,0 +1,8 @@
+if (lineRead != null)
+					if (!firstMessage) {
+						respondToClient(out, lineRead);
+					}
+				if (firstMessage) {
+					out.write(("0;TelefonDienst" + "\n").getBytes());
+					firstMessage = false;
+				}

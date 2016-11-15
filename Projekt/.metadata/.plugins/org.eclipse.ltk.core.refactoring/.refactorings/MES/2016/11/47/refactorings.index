@@ -1,0 +1,7 @@
+1479144674004	Rename type 'WaitForConnections'
+1479144699632	Rename type 'ClientCommunicationHandler'
+1479144706832	Rename type 'ConnectionsThread'
+1479149689847	Rename type 'AllConnectionsThread'
+1479149700568	Rename type 'ClientConnectionThread'
+1479152295125	Rename type 'Device'
+1479242934158	Move compilation units

@@ -1,0 +1,20 @@
+package Model;
+
+import java.util.ArrayList;
+
+public class ConnectedDevices extends ArrayList<ConnectionStorage> {
+
+	public void newMsgById(int id, String msg){
+		for (ConnectionStorage d : this)
+			if (d.getId() == id)	
+	}
+
+	public ArrayList<String> getMsgsById(int id) {
+		for (ConnectionStorage d : this)
+			if (d.getId() == id)
+				return d.getMsgs();
+
+		return null;
+	}
+
+}

@@ -22,7 +22,6 @@ public class Controller implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String name = ((JButton) e.getSource()).getName();
-
 		String[] names=name.split(";");
 		switch (names[0]) {
 		case "inquiryButton":
@@ -44,7 +43,7 @@ public class Controller implements ActionListener {
 			view.viewDebug(server);
 			break;	
 		case "deviceButton":
-			view.viewDeviceConnection(names[1], server);
+			view.viewDeviceConnection(Integer.valueOf(names[1]), server);
 
 		default:
 			break;

@@ -9,22 +9,34 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import Container.InternMessage;
+import Container.InternMessage.WhatMsg;
 import Model.Server;
 
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
+
+enum ShowView {
+	INQUIRED, DEBUGINFOS, CONNECTION, DEVICE
+}
 
 public class View implements Observer {
 
 	private JFrame frame;
-	private JTextField textField;
+	private JTextArea textField;
 	// private ServerState state;
 	private JButton inquiryButton, clearButton, waitButton, viewDebugButton, viewInquiredButton, viewConnectionsButton;
 	private JButton[] newButtons;
+	private ShowView showView;
+	private String viewString;
+	private int conId;
+
 	public View() {
 		// state.addObserver(this);
 		initialize();
 		frame.setVisible(true);
-
+		showView = ShowView.DEBUGINFOS;
+		viewString = "";
 	}
 
 	/**
@@ -46,9 +58,8 @@ public class View implements Observer {
 		lblView.setBounds(508, 37, 70, 15);
 		frame.getContentPane().add(lblView);
 
-		textField = new JTextField();
+		textField = new JTextArea();
 		textField.setBounds(12, 12, 332, 511);
-		textField.setHorizontalAlignment(SwingConstants.LEFT);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 
@@ -87,18 +98,58 @@ public class View implements Observer {
 
 	}
 
+	private void updateInquiredView(Object arg1) {
+		ArrayList<String> inquiredDevices = (ArrayList<String>) arg1;
+		String text = "";
+		for (String i : inquiredDevices) {
+			text += i + "\n";
+		}
+		viewString = text;
+		textField.setText(text);
+
+	}
+
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		ArrayList<String> inquiredDevices = (ArrayList<String>) arg1;
-		if (inquiredDevices.size() > 0) {
-			String text = "";
-			for (String i : inquiredDevices) {
-				text += i + "\n";
-			}
-			textField.setText(text);
-		} else {
-			textField.setText("");
+		switch (showView) {
+		case INQUIRED:
+			updateInquiredView(arg1);
+			break;
+		case CONNECTION:
+			updateConnectionView(arg1);
+		case DEBUGINFOS:
+			updateDebuginfosView(arg1);
+		case DEVICE:
+			updateDeviceView(arg1);
+		default:
+			break;
 		}
+
+	}
+
+	private void updateDeviceView(Object arg1) {
+		InternMessage msg = (InternMessage) arg1;
+		if (msg.whatMsg == WhatMsg.CONNECTIONMSG) {
+			if (msg.id == conId) {
+				viewString += msg.msg + "\n";
+				textField.setText(viewString);
+			}
+		}
+
+	}
+
+	private void updateDebuginfosView(Object arg1) {
+		InternMessage msg = (InternMessage) arg1;
+		if (msg.whatMsg == WhatMsg.DEBUGMSG) {
+			viewString += msg.msg + "\n";
+			textField.setText(viewString);
+		}
+
+	}
+
+	private void updateConnectionView(Object arg1) {
+		// textField.setText("Connections");
+
 	}
 
 	public void addController(Controller controller) {
@@ -108,10 +159,10 @@ public class View implements Observer {
 		viewConnectionsButton.addActionListener(controller);
 		viewDebugButton.addActionListener(controller);
 		viewInquiredButton.addActionListener(controller);
-
 	}
 
 	public void viewInquiry(Server server) {
+		showView = ShowView.INQUIRED;
 		ArrayList<String> inquiredDevices = server.getInquiredDevices();
 		if (inquiredDevices.size() > 0) {
 			String text = "";
@@ -123,27 +174,45 @@ public class View implements Observer {
 			textField.setText("");
 		}
 	}
-	public void viewDeviceConnection(String device, Server server){
-		textField.setText("device "+device);
-		
-	}
-	public void viewConnection(Server server,Controller controller) {
-		textField.setText("Connections");
-		newButtons = new JButton[server.getNumberOfConections()];
-		for(int i = 0; i < newButtons.length;i++){
-			JButton button =  new JButton("test"+ i);
-			button.addActionListener(controller);
-			button.setName("deviceButton;"+i);
-			button.setBounds(viewConnectionsButton.getX(), viewConnectionsButton.getY()+50*(i+1), 117, 25);
-			frame.getContentPane().add(button);
 
+	public void viewDeviceConnection(int connectionId, Server server) {
+		showView = ShowView.DEVICE;
+		System.out.println(connectionId);
+		conId = connectionId;
+		viewString = "device " + connectionId;
+		ArrayList<String> msgs = server.getAllMsgsFromConnectionByID(connectionId);
+		String txt = "";
+		for (String m : msgs) {
+			txt += m + "\n";
+		}
+		viewString += txt;
+		textField.setText(viewString);
+	}
+
+	public void viewConnection(Server server, Controller controller) {
+		showView = ShowView.DEBUGINFOS;
+		textField.setText("Number of Connection: " + server.getNumberOfConections());
+		newButtons = new JButton[server.getNumberOfConections()];
+		for (int i = 0; i < newButtons.length; i++) {
+			JButton button = new JButton("test" + i);
+			button.addActionListener(controller);
+			button.setName("deviceButton;" + i);
+			button.setBounds(viewConnectionsButton.getX(), viewConnectionsButton.getY() + 50 * (i + 1), 117, 25);
+			frame.getContentPane().add(button);
 			newButtons[i] = button;
 		}
 	}
 
 	public void viewDebug(Server server) {
-		textField.setText("Debug");
+		showView = ShowView.DEBUGINFOS;
+		viewString = "DebugInfos:  \n";
+		ArrayList<String> msgs = server.getAllMsgs();
+		String txt = "";
+		for (String m : msgs) {
+			txt += m + "\n";
+		}
+		viewString += txt;
+		textField.setText(viewString);
 	}
 
-	
 }
