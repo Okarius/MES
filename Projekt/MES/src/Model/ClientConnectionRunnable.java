@@ -40,15 +40,21 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 						// Read from the InputStream
 						bytes = din.read(buffer);
 						int hdrLength = 4;
-						readMessage = new String(buffer, hdrLength, bytes - hdrLength);
+						readMessage = new String(buffer, 4, bytes-4);
+						System.out.println(readMessage);
 						changeData(new InternMessage(readMessage, true, this.id));
 						if (readMessage != null)
 							if (!firstMsg) {
 								respondToClient(out, readMessage);
 							}
 						if (firstMsg) {
+							out.write(makeHeader("0;TelefonDienst".length()));
 							out.write(("0;TelefonDienst").getBytes());
+							changeData(new InternMessage("0;TelefonDienst",false,this.id));
+
+
 							firstMsg = false;
+
 						}
 					} catch (Exception e) {
 					}
@@ -66,6 +72,26 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		t.start();
 	}
 
+	private byte[] makeHeader(int length) {
+		System.out.println("Länge: " + length);
+		
+		final byte[] bytes = new byte[4];
+		bytes[0] = (byte) (length >> 16);
+		bytes[1] = (byte) (length >> 8);
+		bytes[2] = (byte) length;
+		byte flags;
+		if (true) {
+			flags = (byte) (0b10000000);
+		} else {
+			flags = 0;
+		}
+		flags |= (byte) 1;
+		bytes[3] = flags;
+		
+		System.out.println("Header:" + bytes[0] + ", "+ bytes[1] + ", " + bytes[2] + ", " + bytes[3]);
+		return bytes;
+	}
+
 	// Services; 0 == Telefondienst
 	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
 		String sendMe = "";
@@ -76,7 +102,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			String NumberName = lineRead.split(";")[1];
 			sendMe = (phoneNumberHandler.getNumberByFirstName(NumberName) + "\n");
 			break;
-		case "Service":
+		case "SERVICE":
 			sendMe = ("0;TelefonDienst");
 			break;
 		default:
@@ -85,6 +111,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		}
 		changeData(new InternMessage(sendMe, false, this.id));
 
+		out.write(makeHeader(sendMe.length()));
 		out.write(sendMe.getBytes());
 
 	}

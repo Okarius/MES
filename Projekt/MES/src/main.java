@@ -6,5 +6,4 @@ public class main {
 		View view = new View();
 		Controller controller = new Controller(server, view);
 	}
-
 }
