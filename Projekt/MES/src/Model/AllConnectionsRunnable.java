@@ -59,7 +59,7 @@ public class AllConnectionsRunnable extends Observable implements Runnable, Obse
 			try {
 				connection = notifier.acceptAndOpen();
 				ClientConnectionRunnable connThread = new ClientConnectionRunnable(connection, lastId);
-				changeData(new InternMessage("Connected ", true, true, lastId));
+				changeData(new InternMessage("New Connection, ID: ", lastId));
 				lastId++;
 				connThread.addObserver(this);
 				Thread processThread = new Thread(connThread);

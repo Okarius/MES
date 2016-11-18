@@ -8,15 +8,9 @@ public class ConnectionStorage {
 
 	private ArrayList<String> msgs;
 
-	public ConnectionStorage() {
-		msgs = new ArrayList<>();
-		msgs.add(id + " is connected");
-	}
-
 	public ConnectionStorage(int _id) {
 		id = _id;
 		msgs = new ArrayList<>();
-		msgs.add(id + " is connected");
 	}
 
 	public void saveMSGToDevice(String msg) {

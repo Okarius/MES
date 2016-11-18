@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 import Model.Server;
+
 /**
  * 
  * @author root
@@ -12,39 +13,30 @@ import Model.Server;
 public class Controller implements ActionListener {
 	Server server;
 	View view;
-	public Controller(Server _state, View _inquiry) {
-		server = _state;
-		view = _inquiry;
+
+	public Controller() {
+		server = new Server();
+		view = new View();
 		view.addController(this);
 		server.addObserver(view);
+		server.newConnection();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String name = ((JButton) e.getSource()).getName();
-		String[] names=name.split(";");
+		String[] names = name.split(";");
 		switch (names[0]) {
-		case "inquiryButton":
-			server.inquire();
-			break;
 		case "clearButton":
-			server.reset();
-			break;
-		case "waitButton":
-			server.newConnection();
-			break;	
-		case "viewInquiryButton":
-			view.viewInquiry(server);
-			break;	
+			System.out.println("clearme");
 		case "viewConnectionButton":
-			view.viewConnection(server,this);
-			break;	
+			view.viewConnection(server, this);
+			break;
 		case "viewDebugButton":
 			view.viewDebug(server);
-			break;	
+			break;
 		case "deviceButton":
 			view.viewDeviceConnection(Integer.valueOf(names[1]), server);
-
 		default:
 			break;
 		}

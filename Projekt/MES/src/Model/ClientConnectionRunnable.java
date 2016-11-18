@@ -27,7 +27,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	@Override
 	public void run() {
 		try {
-			System.out.println("Client Connected...");
+			changeData(new InternMessage("Start ConnectionsThread"));
 			DataInputStream din = new DataInputStream(conn.openInputStream());
 			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
 			boolean firstMsg = true;
@@ -39,57 +39,32 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 					try {
 						// Read from the InputStream
 						bytes = din.read(buffer);
-						int hdrLength = 4;
-						readMessage = new String(buffer, 4, bytes-4);
-						System.out.println(readMessage);
+						readMessage = new String(buffer, 0, bytes);
 						changeData(new InternMessage(readMessage, true, this.id));
 						if (readMessage != null)
 							if (!firstMsg) {
 								respondToClient(out, readMessage);
 							}
 						if (firstMsg) {
-							out.write(makeHeader("0;TelefonDienst".length()));
 							out.write(("0;TelefonDienst").getBytes());
-							changeData(new InternMessage("0;TelefonDienst",false,this.id));
-
-
+							changeData(new InternMessage("0;TelefonDienst", false, this.id));
 							firstMsg = false;
-
 						}
 					} catch (Exception e) {
+						changeData(new InternMessage("Stop ConnectionsThreadUpper"));
 					}
 				} else {
 					// Thread.sleep(100);
 				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			changeData(new InternMessage("Stop ConnectionsThreadBottom"));
 		}
 	}
 
 	public void startThis() {
 		Thread t = new Thread(this);
 		t.start();
-	}
-
-	private byte[] makeHeader(int length) {
-		System.out.println("Länge: " + length);
-		
-		final byte[] bytes = new byte[4];
-		bytes[0] = (byte) (length >> 16);
-		bytes[1] = (byte) (length >> 8);
-		bytes[2] = (byte) length;
-		byte flags;
-		if (true) {
-			flags = (byte) (0b10000000);
-		} else {
-			flags = 0;
-		}
-		flags |= (byte) 1;
-		bytes[3] = flags;
-		
-		System.out.println("Header:" + bytes[0] + ", "+ bytes[1] + ", " + bytes[2] + ", " + bytes[3]);
-		return bytes;
 	}
 
 	// Services; 0 == Telefondienst
@@ -102,7 +77,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			String NumberName = lineRead.split(";")[1];
 			sendMe = (phoneNumberHandler.getNumberByFirstName(NumberName) + "\n");
 			break;
-		case "SERVICE":
+		case "Service":
 			sendMe = ("0;TelefonDienst");
 			break;
 		default:
@@ -111,7 +86,6 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		}
 		changeData(new InternMessage(sendMe, false, this.id));
 
-		out.write(makeHeader(sendMe.length()));
 		out.write(sendMe.getBytes());
 
 	}

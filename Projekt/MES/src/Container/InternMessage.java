@@ -10,33 +10,30 @@ public class InternMessage {
 	public boolean firstMsg, from;
 	public int id;
 	/**
+	 * Constructor for Connections
+	 * @param _msg
+	 * @param _from
+	 * @param _id
+	 */
+	public InternMessage( String _msg,boolean _from ,int _id) {
+		whatMsg = WhatMsg.CONNECTIONMSG;
+		msg = _msg;
+		id = _id;
+		firstMsg = false;
+	}
+	/**
 	 * Constructor for new Connections
 	 * @param _msg
 	 * @param _from
 	 * @param _id
 	 */
-	public InternMessage( String _msg, boolean _firstMsg, boolean _from, int _id) {
+	public InternMessage( String _msg,int _id) {
 		whatMsg = WhatMsg.CONNECTIONMSG;
 		msg = _msg;
-		firstMsg = _firstMsg;
-		from = _from;
 		id = _id;
+		firstMsg = true;
 	}
-	/**
-	 * Constructor for old Connections
-	 * @param _msg
-	 * @param _from
-	 * @param _id
-	 */
-	public InternMessage(String _msg, boolean _from, int _id) {
-		whatMsg =WhatMsg.CONNECTIONMSG;
-		msg = _msg;
-		firstMsg = false;
-		from = _from;
-		id = _id;
-	}
-	
-	
+
 	/**
 	 * Constructor for DebugMsgs
 	 * @param _msg

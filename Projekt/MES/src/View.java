@@ -25,7 +25,7 @@ public class View implements Observer {
 	private JFrame frame;
 	private JTextArea textField;
 	// private ServerState state;
-	private JButton inquiryButton, clearButton, waitButton, viewDebugButton, viewInquiredButton, viewConnectionsButton;
+	private JButton clearButton, viewDebugButton, viewConnectionsButton;
 	private JButton[] newButtons;
 	private ShowView showView;
 	private String viewString;
@@ -63,28 +63,11 @@ public class View implements Observer {
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 
-		inquiryButton = new JButton("Inquiry");
-		inquiryButton.setBounds(369, 182, 117, 25);
-		inquiryButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		inquiryButton.setName("inquiryButton");
-		frame.getContentPane().add(inquiryButton);
-
 		clearButton = new JButton("ResetServer");
 		clearButton.setBounds(369, 86, 117, 25);
 		clearButton.setHorizontalAlignment(SwingConstants.RIGHT);
 		clearButton.setName("clearButton");
 		frame.getContentPane().add(clearButton);
-
-		waitButton = new JButton("Waiting for Connection");
-		waitButton.setBounds(369, 134, 117, 25);
-		waitButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		waitButton.setName("waitButton");
-		frame.getContentPane().add(waitButton);
-
-		viewInquiredButton = new JButton("Inquired");
-		viewInquiredButton.setBounds(499, 86, 117, 25);
-		viewInquiredButton.setName("viewInquiryButton");
-		frame.getContentPane().add(viewInquiredButton);
 
 		viewConnectionsButton = new JButton("Connections");
 		viewConnectionsButton.setBounds(499, 182, 117, 25);
@@ -98,23 +81,9 @@ public class View implements Observer {
 
 	}
 
-	private void updateInquiredView(Object arg1) {
-		ArrayList<String> inquiredDevices = (ArrayList<String>) arg1;
-		String text = "";
-		for (String i : inquiredDevices) {
-			text += i + "\n";
-		}
-		viewString = text;
-		textField.setText(text);
-
-	}
-
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		switch (showView) {
-		case INQUIRED:
-			updateInquiredView(arg1);
-			break;
 		case CONNECTION:
 			updateConnectionView(arg1);
 		case DEBUGINFOS:
@@ -129,13 +98,13 @@ public class View implements Observer {
 
 	private void updateDeviceView(Object arg1) {
 		InternMessage msg = (InternMessage) arg1;
+
 		if (msg.whatMsg == WhatMsg.CONNECTIONMSG) {
 			if (msg.id == conId) {
 				viewString += msg.msg + "\n";
 				textField.setText(viewString);
 			}
 		}
-
 	}
 
 	private void updateDebuginfosView(Object arg1) {
@@ -149,37 +118,18 @@ public class View implements Observer {
 
 	private void updateConnectionView(Object arg1) {
 		// textField.setText("Connections");
-
 	}
 
 	public void addController(Controller controller) {
-		inquiryButton.addActionListener(controller);
 		clearButton.addActionListener(controller);
-		waitButton.addActionListener(controller);
 		viewConnectionsButton.addActionListener(controller);
 		viewDebugButton.addActionListener(controller);
-		viewInquiredButton.addActionListener(controller);
-	}
-
-	public void viewInquiry(Server server) {
-		showView = ShowView.INQUIRED;
-		ArrayList<String> inquiredDevices = server.getInquiredDevices();
-		if (inquiredDevices.size() > 0) {
-			String text = "";
-			for (String i : inquiredDevices) {
-				text += i + "\n";
-			}
-			textField.setText(text);
-		} else {
-			textField.setText("");
-		}
 	}
 
 	public void viewDeviceConnection(int connectionId, Server server) {
 		showView = ShowView.DEVICE;
-		System.out.println(connectionId);
 		conId = connectionId;
-		viewString = "device " + connectionId;
+		viewString = "ConnectionId: " + connectionId + "\n";
 		ArrayList<String> msgs = server.getAllMsgsFromConnectionByID(connectionId);
 		String txt = "";
 		for (String m : msgs) {
@@ -190,7 +140,7 @@ public class View implements Observer {
 	}
 
 	public void viewConnection(Server server, Controller controller) {
-		showView = ShowView.DEBUGINFOS;
+		showView = ShowView.CONNECTION;
 		textField.setText("Number of Connection: " + server.getNumberOfConections());
 		newButtons = new JButton[server.getNumberOfConections()];
 		for (int i = 0; i < newButtons.length; i++) {

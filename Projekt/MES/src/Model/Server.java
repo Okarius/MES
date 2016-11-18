@@ -33,7 +33,6 @@ import Container.InternMessage.WhatMsg;
  *
  */
 public class Server extends Observable implements Observer {
-	private ArrayList<String> inquiredDevices;
 	private ConnectedDevices connectedDevices;
 	private ArrayList<String> debuggMsgs;
 
@@ -48,16 +47,9 @@ public class Server extends Observable implements Observer {
 	private AllConnectionsRunnable allConnectionsRunnable;
 
 	public Server() {
-		inquiredDevices = new ArrayList<String>();
 		connectedDevices = new ConnectedDevices();
 		allConnectionsRunnable = new AllConnectionsRunnable();
 		debuggMsgs = new ArrayList<String>();
-	}
-
-	public void inquire() {
-		InquireHandler inquirer = new InquireHandler();
-		this.inquiredDevices = inquirer.inquire();
-		changeData(this.inquiredDevices);
 	}
 
 	public void newConnection() {
@@ -66,24 +58,9 @@ public class Server extends Observable implements Observer {
 		waitThread.start();
 	}
 
-	// this funktion resets model
-	public void reset() {
-		inquiredDevices.clear();
-		if (waitThread != null) {
-			waitThread.stop();
-			waitThread = null;
-		}
-
-		changeData(this.inquiredDevices);
-	}
-
 	private void changeData(Object data) {
 		setChanged(); // the two methods of Observable class
 		notifyObservers(data);
-	}
-
-	public ArrayList<String> getInquiredDevices() {
-		return this.inquiredDevices;
 	}
 
 	public int getNumberOfConections() {
@@ -97,10 +74,11 @@ public class Server extends Observable implements Observer {
 			if (msg.firstMsg)
 				connectedDevices.add(new ConnectionStorage(msg.id));
 			else {
-				connectedDevices.newMsgById(msg.msg, msg.id, msg.from);
+				connectedDevices.newMsgById(msg);
 			}
 		}
 		debuggMsgs.add("Debugger: " + msg.msg);
+		changeData(arg);
 	}
 
 	public ArrayList<String> getAllMsgsFromConnectionByID(int id) {
