@@ -1,0 +1,13 @@
+package Container;
+
+import java.util.ArrayList;
+
+public class Storage {
+	private ConnectedDevices connectedDevices;
+	private ArrayList<String> debuggMsgs;
+	
+	public Storage(){
+		connectedDevices = new ConnectedDevices();
+		debuggMsgs = new ArrayList<Stringg>();
+	}
+}

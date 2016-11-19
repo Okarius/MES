@@ -1,0 +1,10 @@
+package Model;
+
+import java.util.ArrayList;
+
+import Container.ConnectedDevices;
+
+public class Storrage {
+	private ConnectedDevices connectedDevices;
+	private ArrayList<String> debuggMsgs;
+}

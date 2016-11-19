@@ -1,0 +1,31 @@
+package Container;
+
+import java.util.ArrayList;
+
+
+/**
+ * 
+ * @author root
+ *
+ */
+public class ConnectedDevices extends ArrayList<ConnectionStorage> {
+
+	public void newMsgById(InternMessage msg) {
+		for (int i = 0; i < this.size(); i++)
+			if (this.get(i).getId() == msg.id)
+				this.get(i).saveMSG(msg.msg);
+	}
+
+	public ArrayList<String> getMsgsById(int id) {
+		for (ConnectionStorage d : this)
+			if (d.getId() == id)
+				return d.getMsgs();
+
+		return null;
+	}
+
+	public void newConnection(int id) {
+		this.add(new ConnectionStorage(id));
+	}
+
+}

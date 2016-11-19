@@ -1,0 +1,31 @@
+package Container;
+
+import java.util.ArrayList;
+
+import Container.InternMessage.WhatMsg;
+
+public class Storage {
+	private ConnectedDevices connectedDevices;
+	private ArrayList<String> debuggMsgs;
+
+	public Storage() {
+		connectedDevices = new ConnectedDevices();
+		debuggMsgs = new ArrayList<String>();
+	}
+
+	public int getNumberOfConections() {
+		return connectedDevices.size();
+	}
+
+	public void newConnectionMessage(InternMessage msg) {
+		if (msg.whatMsg == WhatMsg.CONNECTIONMSG) {
+			if (msg.firstMsg)
+				connectedDevices.newConnection(msg.id);
+			else {
+				connectedDevices.newMsgById(msg);
+			}
+		}
+		debuggMsgs.add(msg.msg);
+	}
+
+}

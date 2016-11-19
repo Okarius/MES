@@ -1,0 +1,48 @@
+package Model;
+/**
+ * This abstract class is used to Implement 
+ * Additional Services. 
+ * Every Service should have specific methods
+ * Those are specified here.
+ * @author Nikolas
+ *
+ */
+public abstract class Service {
+	private int id;
+	private String name;
+	private String debugMsg;
+	public Service(int _id, String _name) {
+		this.id = _id;
+		this.name = _name;
+	}
+
+	public String getDebugMessage();
+
+	public abstract byte[] getAnswer(String payload);
+	
+	
+	protected String[] getPayloadArray(String payload){
+		String[] payloadArray = payload.split(";");
+		String[] payloadArrayWithoutID = new String[payloadArray.length-1];
+		for (int i = 1; i < payloadArray.length; i++) {
+			payloadArrayWithoutID[i-1] = payloadArray[i];
+		}
+		return payloadArrayWithoutID;
+	}
+
+	
+	
+	
+	
+	
+
+	public int getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	
+}

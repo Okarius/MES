@@ -11,13 +11,14 @@ import javax.swing.SwingConstants;
 
 import Container.InternMessage;
 import Container.InternMessage.WhatMsg;
+import Container.Storage;
 import Model.Server;
 
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 enum ShowView {
-	INQUIRED, DEBUGINFOS, CONNECTION, DEVICE
+	DEBUGINFOS, CONNECTION, DEVICE
 }
 
 public class View implements Observer {
@@ -30,11 +31,14 @@ public class View implements Observer {
 	private ShowView showView;
 	private String viewString;
 	private int conId;
+	private Controller controller;
 
-	public View() {
+	public View(Controller _controller) {
 		// state.addObserver(this);
 		initialize();
 		frame.setVisible(true);
+		controller = _controller;
+		addController();
 		showView = ShowView.DEBUGINFOS;
 		viewString = "";
 	}
@@ -42,7 +46,6 @@ public class View implements Observer {
 	/**
 	 * Initialize the contents of the frame.
 	 * 
-	 * @param textField_1
 	 */
 	private void initialize() {
 		frame = new JFrame();
@@ -81,56 +84,79 @@ public class View implements Observer {
 
 	}
 
+	/**
+	 * This update fkt gets called from "Server" It gets the whole Storage. This
+	 * fkt has to check first what the View shows right now(showView). Depending
+	 * on this will the view update.
+	 */
 	@Override
 	public void update(Observable arg0, Object arg1) {
+		// The storage saves every Message sent and received
+		Storage storage = (Storage) arg1;
 		switch (showView) {
 		case CONNECTION:
-			updateConnectionView(arg1);
+			updateConnectionView(storage);
 		case DEBUGINFOS:
-			updateDebuginfosView(arg1);
+			updateDebuginfosView(storage);
 		case DEVICE:
-			updateDeviceView(arg1);
+			updateDeviceView(storage);
 		default:
 			break;
 		}
-
+		if (storage.connectionsChanged()) {
+			updateDynamicButtons(storage);
+		}
 	}
 
-	private void updateDeviceView(Object arg1) {
-		InternMessage msg = (InternMessage) arg1;
+	public void updateDynamicButtons(Storage storage) {
+		ArrayList<Integer> allIds = storage.getAllIdsFromRunningConnections();
+		newButtons = new JButton[allIds.size()];
+		for (int i = 0; i < allIds.size(); i++) {
+			int id = allIds.get(i);
+			JButton button = new JButton("ID: " + id);
+			button.addActionListener(this.controller);
+			button.setName("deviceButton;" + id);
+			button.setBounds(viewConnectionsButton.getX(), viewConnectionsButton.getY() + 50 * (i + 1), 117, 25);
+			frame.getContentPane().add(button);
+			newButtons[i] = button;
+		}
+	}
 
-		if (msg.whatMsg == WhatMsg.CONNECTIONMSG) {
-			if (msg.id == conId) {
-				viewString += msg.msg + "\n";
+	private void updateDeviceView(Storage storage) {
+		InternMessage lastMsg = storage.getLastDebugMsg();
+		if (lastMsg.whatMsg == WhatMsg.CONNECTIONMSG) {
+			if (lastMsg.id == conId) {
+				viewString += lastMsg.msg + "\n";
 				textField.setText(viewString);
 			}
 		}
 	}
 
-	private void updateDebuginfosView(Object arg1) {
-		InternMessage msg = (InternMessage) arg1;
-		if (msg.whatMsg == WhatMsg.DEBUGMSG) {
-			viewString += msg.msg + "\n";
+	private void updateDebuginfosView(Storage storage) {
+		if (storage.getLastDebugMsg().whatMsg == WhatMsg.DEBUGMSG) {
+			viewString += storage.getLastDebugMsg().msg + "\n";
 			textField.setText(viewString);
 		}
 
 	}
 
-	private void updateConnectionView(Object arg1) {
-		// textField.setText("Connections");
+	private void updateConnectionView(Storage storage) {
+		textField.setText("Number of Connection: " + storage.getNumberOfConections());
 	}
 
-	public void addController(Controller controller) {
+	public void addController() {
 		clearButton.addActionListener(controller);
 		viewConnectionsButton.addActionListener(controller);
 		viewDebugButton.addActionListener(controller);
 	}
 
-	public void viewDeviceConnection(int connectionId, Server server) {
+	// *************ButtonsPressed********************//
+
+	public void viewDeviceConnection(int connectionId, Storage storage) {
 		showView = ShowView.DEVICE;
 		conId = connectionId;
 		viewString = "ConnectionId: " + connectionId + "\n";
-		ArrayList<String> msgs = server.getAllMsgsFromConnectionByID(connectionId);
+		ArrayList<String> msgs = storage.getAllMsgsFromConnectionByID(connectionId);
 		String txt = "";
 		for (String m : msgs) {
 			txt += m + "\n";
@@ -139,24 +165,17 @@ public class View implements Observer {
 		textField.setText(viewString);
 	}
 
-	public void viewConnection(Server server, Controller controller) {
+	public void viewConnection(Storage storage) {
 		showView = ShowView.CONNECTION;
-		textField.setText("Number of Connection: " + server.getNumberOfConections());
-		newButtons = new JButton[server.getNumberOfConections()];
-		for (int i = 0; i < newButtons.length; i++) {
-			JButton button = new JButton("test" + i);
-			button.addActionListener(controller);
-			button.setName("deviceButton;" + i);
-			button.setBounds(viewConnectionsButton.getX(), viewConnectionsButton.getY() + 50 * (i + 1), 117, 25);
-			frame.getContentPane().add(button);
-			newButtons[i] = button;
-		}
+		textField.setText("Number of Connection: " + storage.getNumberOfConections());
+		updateDynamicButtons(storage);
+
 	}
 
-	public void viewDebug(Server server) {
+	public void viewDebug(Storage storage) {
 		showView = ShowView.DEBUGINFOS;
 		viewString = "DebugInfos:  \n";
-		ArrayList<String> msgs = server.getAllMsgs();
+		ArrayList<String> msgs = storage.getAllMsgsString();
 		String txt = "";
 		for (String m : msgs) {
 			txt += m + "\n";

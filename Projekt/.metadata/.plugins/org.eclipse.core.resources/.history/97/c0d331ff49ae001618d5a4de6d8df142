@@ -1,0 +1,31 @@
+package Model;
+
+import Services.Service;
+
+/**
+ * The SecretaryPhoneNumberService Returns a byte Array
+ * 
+ * @author root
+ *
+ */
+public class SecretaryPhoneNumberService extends Service {
+	private String phoneNumber = "1234567890";
+
+	public SecretaryPhoneNumberService(int _id, String _name) {
+		super(_id, _name);
+	}
+
+	@Override
+	public byte[] getAnswer(String payload) {
+		String[] payloadArray = this.getPayloadArray(payload);
+		String msg = "";
+		if (payloadArray.length == 0) {
+			msg = phoneNumber;
+		} else {
+			msg = "Wrong Arguments";
+		}
+		debugMsg = msg;
+		return msg.getBytes();
+	}
+
+}

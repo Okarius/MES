@@ -6,8 +6,10 @@ import javax.swing.JButton;
 import Model.Server;
 
 /**
+ * This implements an ActionListener. It is the ActionListener for the Views
+ * Buttons. It controlls both Server and View.
  * 
- * @author root
+ * @author Nikolas+Nico
  *
  */
 public class Controller implements ActionListener {
@@ -16,12 +18,14 @@ public class Controller implements ActionListener {
 
 	public Controller() {
 		server = new Server();
-		view = new View();
-		view.addController(this);
+		view = new View(this);
 		server.addObserver(view);
 		server.newConnection();
 	}
 
+	/**
+	 * A Butto got pressed, Decide what to do.
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String name = ((JButton) e.getSource()).getName();
@@ -30,13 +34,13 @@ public class Controller implements ActionListener {
 		case "clearButton":
 			System.out.println("clearme");
 		case "viewConnectionButton":
-			view.viewConnection(server, this);
+			view.viewConnection(server.getStorage());
 			break;
 		case "viewDebugButton":
-			view.viewDebug(server);
+			view.viewDebug(server.getStorage());
 			break;
 		case "deviceButton":
-			view.viewDeviceConnection(Integer.valueOf(names[1]), server);
+			view.viewDeviceConnection(Integer.valueOf(names[1]), server.getStorage());
 		default:
 			break;
 		}

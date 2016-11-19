@@ -8,19 +8,23 @@ import java.util.Observable;
 import javax.microedition.io.StreamConnection;
 
 import Container.InternMessage;
+import Services.PhoneNumberHandler;
+import Services.ServiceManager;
 
 /**
  * 
- * @author root
+ * @author Nikolas+Nico
  *
  */
 public class ClientConnectionRunnable extends Observable implements Runnable {
 
 	private StreamConnection conn;
 	private int id;
+	private ServiceManager serviceManager;
 
 	public ClientConnectionRunnable(StreamConnection connection, int id) {
 		conn = connection;
+		serviceManager = new ServiceManager();
 		this.id = id;
 	}
 
@@ -30,7 +34,6 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			changeData(new InternMessage("Start ConnectionsThread"));
 			DataInputStream din = new DataInputStream(conn.openInputStream());
 			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
-			boolean firstMsg = true;
 			while (true) {
 				byte[] buffer = new byte[(int) Math.pow(10, 9)];
 				String readMessage;
@@ -41,15 +44,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 						bytes = din.read(buffer);
 						readMessage = new String(buffer, 0, bytes);
 						changeData(new InternMessage(readMessage, true, this.id));
-						if (readMessage != null)
-							if (!firstMsg) {
-								respondToClient(out, readMessage);
-							}
-						if (firstMsg) {
-							out.write(("0;TelefonDienst").getBytes());
-							changeData(new InternMessage("0;TelefonDienst", false, this.id));
-							firstMsg = false;
-						}
+						respondToClient(out, readMessage);
 					} catch (Exception e) {
 						changeData(new InternMessage("Stop ConnectionsThreadUpper"));
 					}
@@ -69,24 +64,10 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 
 	// Services; 0 == Telefondienst
 	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
-		String sendMe = "";
-		PhoneNumberHandler phoneNumberHandler = new PhoneNumberHandler();
-		String service = lineRead.split(";")[0];
-		switch (service) {
-		case "0":
-			String NumberName = lineRead.split(";")[1];
-			sendMe = (phoneNumberHandler.getNumberByFirstName(NumberName) + "\n");
-			break;
-		case "Service":
-			sendMe = ("0;TelefonDienst");
-			break;
-		default:
-			sendMe = ("UNKOWN SERVICE " + service + "\n");
-			break;
-		}
-		changeData(new InternMessage(sendMe, false, this.id));
-
-		out.write(sendMe.getBytes());
+		// if (isNumeric(lineRead.split(";")[0])) {// First value id?
+		byte[] payLoadToSend = serviceManager.getAnswer(lineRead);
+		changeData(new InternMessage(serviceManager.getLastMsgSend(), false, this.id));
+		out.write(payLoadToSend);
 
 	}
 

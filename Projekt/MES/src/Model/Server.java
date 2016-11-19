@@ -23,33 +23,23 @@ import javax.microedition.io.StreamConnection;
 import javax.microedition.io.StreamConnectionNotifier;
 
 import Container.ConnectedDevices;
-import Container.ConnectionStorage;
 import Container.InternMessage;
+import Container.Storage;
 import Container.InternMessage.WhatMsg;
 
 /**
  * 
- * @author root
+ * @author Nikolas
  *
  */
 public class Server extends Observable implements Observer {
-	private ConnectedDevices connectedDevices;
-	private ArrayList<String> debuggMsgs;
-
-	public final UUID uuid = new UUID("0000110100001000800000805F9B34FB", false);
-	public final String name = "Echo Server"; // the name of the service
-	public final String url = "btspp://localhost:" + uuid // the service url
-			+ ";name=" + name + ";authenticate=false;encrypt=false;";
-	LocalDevice local = null;
-	StreamConnectionNotifier server = null;
-	StreamConnection conn = null;
+	private Storage storage;
 	private Thread waitThread;
 	private AllConnectionsRunnable allConnectionsRunnable;
 
 	public Server() {
-		connectedDevices = new ConnectedDevices();
 		allConnectionsRunnable = new AllConnectionsRunnable();
-		debuggMsgs = new ArrayList<String>();
+		storage = new Storage();
 	}
 
 	public void newConnection() {
@@ -63,30 +53,15 @@ public class Server extends Observable implements Observer {
 		notifyObservers(data);
 	}
 
-	public int getNumberOfConections() {
-		return connectedDevices.size();
-	}
-
 	@Override
 	public void update(Observable o, Object arg) {
 		InternMessage msg = (InternMessage) arg;
-		if (msg.whatMsg == WhatMsg.CONNECTIONMSG) {
-			if (msg.firstMsg)
-				connectedDevices.add(new ConnectionStorage(msg.id));
-			else {
-				connectedDevices.newMsgById(msg);
-			}
-		}
-		debuggMsgs.add("Debugger: " + msg.msg);
-		changeData(arg);
+		storage.newConnectionMessage(msg);
+		changeData(storage);
 	}
 
-	public ArrayList<String> getAllMsgsFromConnectionByID(int id) {
-		return connectedDevices.getMsgsById(id);
-	}
-
-	public ArrayList<String> getAllMsgs() {
-		return debuggMsgs;
+	public Storage getStorage() {
+		return storage;
 	}
 
 }
