@@ -1,6 +1,0 @@
-package Model;
-
-public class Storrage {
-	//private ConnectedDevices connectedDevices;
-	private ArrayList<String> debuggMsgs;
-}

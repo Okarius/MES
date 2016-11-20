@@ -12,6 +12,12 @@ import Services.PhoneNumberHandler;
 import Services.ServiceManager;
 
 /**
+ * This Runnable is used in a thread which respresends a singel Client-Server
+ * connection. They are spereated by an id. have their own StreamConnection and
+ * every connection has its own serviceManager to create the answers. This
+ * Runnable is used to create Threads in the AllConnectionsRunnable. Every
+ * connection gets its own Thread. This Runnable is Observed by the
+ * AllConnectionsRunanble. It passes every Msg sent and received forward.
  * 
  * @author Nikolas+Nico
  *
@@ -63,10 +69,23 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	}
 
 	// Services; 0 == Telefondienst
+	/**
+	 * This funktion handles every incoming msg and deceides how to answer. It
+	 * also send the Msgs thus it gets the DataOutputStream. What the Server
+	 * answers is decided by the ServiceMangaer which uses the Service itself.
+	 * After the Answer is created the Observer(AllConnectionsRunnable) will be
+	 * informed about this message
+	 * 
+	 * @param out
+	 * @param lineRead
+	 * @throws IOException
+	 */
 	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
-		// if (isNumeric(lineRead.split(";")[0])) {// First value id?
 		byte[] payLoadToSend = serviceManager.getAnswer(lineRead);
 		changeData(new InternMessage(serviceManager.getLastMsgSend(), false, this.id));
+		// for (int i = 0; i < payLoadToSend.length; i++) {
+		// out.write(payLoadToSend[i]);
+		// }
 		out.write(payLoadToSend);
 
 	}

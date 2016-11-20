@@ -4,6 +4,12 @@ import java.util.ArrayList;
 
 import Container.InternMessage.WhatMsg;
 
+/**
+ * The Storage is the servers Message Managing object. The Server Class holds an
+ * Reference of the Storage. The Server passes every incomig InternMessage to
+ * the Storage. Thus the storage menages the InterMessages. The storage is then
+ * Used by the view to update the GUI.
+ */
 public class Storage {
 	private ConnectedDevices connectedDevices;
 	private ArrayList<InternMessage> debuggMsgs;
@@ -17,6 +23,12 @@ public class Storage {
 		return connectedDevices.size();
 	}
 
+	/**
+	 * When ever the server get a new InternMessage it passes it to the storage.
+	 * Thus the storages job is it to save the message correctly. debuggMsgs get
+	 * saved in the order they arrive. And ConnectionMsgs have to get checked if
+	 * they are new or old Connections.
+	 */
 	public void newConnectionMessage(InternMessage msg) {
 		if (msg.whatMsg == WhatMsg.CONNECTIONMSG) {
 			if (msg.firstMsg)
@@ -56,9 +68,9 @@ public class Storage {
 
 	public boolean connectionsChanged() {
 		InternMessage msg = getLastDebugMsg();
-		if(msg.firstMsg)
+		if (msg.firstMsg)
 			return true;
-		if(msg.lastMsg)
+		if (msg.lastMsg)
 			return true;
 		return false;
 	}

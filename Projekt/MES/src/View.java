@@ -25,7 +25,6 @@ public class View implements Observer {
 
 	private JFrame frame;
 	private JTextArea textField;
-	// private ServerState state;
 	private JButton clearButton, viewDebugButton, viewConnectionsButton;
 	private JButton[] newButtons;
 	private ShowView showView;
@@ -34,7 +33,6 @@ public class View implements Observer {
 	private Controller controller;
 
 	public View(Controller _controller) {
-		// state.addObserver(this);
 		initialize();
 		frame.setVisible(true);
 		controller = _controller;
@@ -43,10 +41,6 @@ public class View implements Observer {
 		viewString = "";
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 * 
-	 */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(200, 200, 900, 600);
@@ -87,7 +81,10 @@ public class View implements Observer {
 	/**
 	 * This update fkt gets called from "Server" It gets the whole Storage. This
 	 * fkt has to check first what the View shows right now(showView). Depending
-	 * on this will the view update.
+	 * on this will the view update. Also it checks if the connections changed.
+	 * Thus its able to update the Dynamic buttons. This funktion gets the
+	 * "Storage" from the server. The storage hold every message the server sent
+	 * and received also it contains some debug messages like "New Connection"
 	 */
 	@Override
 	public void update(Observable arg0, Object arg1) {
@@ -103,11 +100,17 @@ public class View implements Observer {
 		default:
 			break;
 		}
+		// Check if the dynamic Button have to change
 		if (storage.connectionsChanged()) {
 			updateDynamicButtons(storage);
 		}
 	}
 
+	/**
+	 * This funktion gets called whenever a new connection appears or an old one
+	 * disappears. The buttons this funktion creates are used to decide whichs
+	 * connection will be printed. It creates every Button new.
+	 */
 	public void updateDynamicButtons(Storage storage) {
 		ArrayList<Integer> allIds = storage.getAllIdsFromRunningConnections();
 		newButtons = new JButton[allIds.size()];
@@ -122,6 +125,10 @@ public class View implements Observer {
 		}
 	}
 
+	/**
+	 * Adds the last msg to the View if the msg fits to the choosen connection
+	 * 
+	 */
 	private void updateDeviceView(Storage storage) {
 		InternMessage lastMsg = storage.getLastDebugMsg();
 		if (lastMsg.whatMsg == WhatMsg.CONNECTIONMSG) {
@@ -132,12 +139,13 @@ public class View implements Observer {
 		}
 	}
 
+	/**
+	 * Adds the last msg to the view Since the Debug view shows everything in
+	 * the order the messages arrived
+	 */
 	private void updateDebuginfosView(Storage storage) {
-		if (storage.getLastDebugMsg().whatMsg == WhatMsg.DEBUGMSG) {
-			viewString += storage.getLastDebugMsg().msg + "\n";
-			textField.setText(viewString);
-		}
-
+		viewString += storage.getLastDebugMsg().msg + "\n";
+		textField.setText(viewString);
 	}
 
 	private void updateConnectionView(Storage storage) {
@@ -152,6 +160,15 @@ public class View implements Observer {
 
 	// *************ButtonsPressed********************//
 
+	/**
+	 * This Fkt gets called when the buttons created in
+	 * updateDynamicButtons(Storage storage) get pressed. The buttons have the
+	 * Connection id in their name. Thus this fkt prints the whole connection of
+	 * a sertain device/conection. This fkt gets called from the controller
+	 * 
+	 * @param connectionId
+	 * @param storage
+	 */
 	public void viewDeviceConnection(int connectionId, Storage storage) {
 		showView = ShowView.DEVICE;
 		conId = connectionId;
@@ -165,13 +182,21 @@ public class View implements Observer {
 		textField.setText(viewString);
 	}
 
+	/**
+	 * Simply print how many connections are up right now
+	 * 
+	 * @param storage
+	 */
 	public void viewConnection(Storage storage) {
 		showView = ShowView.CONNECTION;
 		textField.setText("Number of Connection: " + storage.getNumberOfConections());
-		updateDynamicButtons(storage);
-
 	}
 
+	/**
+	 * The debugView shows everything in the order the message arrives.
+	 * 
+	 * @param storage
+	 */
 	public void viewDebug(Storage storage) {
 		showView = ShowView.DEBUGINFOS;
 		viewString = "DebugInfos:  \n";
