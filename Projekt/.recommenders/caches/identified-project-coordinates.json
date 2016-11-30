@@ -1,1 +1,1 @@
-[[{"location":"/usr/lib/jvm/java-8-openjdk-amd64","type":"JRE","hints":{"EXECUTION_ENVIRONMENT":"JavaSE-1.7"}},"jre:jre:1.7.0"],[{"location":"/home/niki/git/MES/Projekt/MES","type":"PROJECT","hints":{"PROJECT_NAME":"MES"}},"ABSENT"]]
+[[{"location":"/home/niki/git/MES/Projekt/MES","type":"PROJECT","hints":{"PROJECT_NAME":"MES"}},"ABSENT"],[{"location":"/usr/lib/jvm/java-8-openjdk-amd64","type":"JRE","hints":{"EXECUTION_ENVIRONMENT":"JavaSE-1.7"}},"jre:jre:1.7.0"]]

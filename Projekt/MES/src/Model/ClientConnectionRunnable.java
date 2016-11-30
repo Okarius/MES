@@ -3,12 +3,14 @@ package Model;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Observable;
 
 import javax.microedition.io.StreamConnection;
 
 import Container.InternMessage;
-import Services.PhoneNumberHandler;
+import Model.HeaderWorker.ContentType;
 import Services.ServiceManager;
 
 /**
@@ -27,10 +29,12 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	private StreamConnection conn;
 	private int id;
 	private ServiceManager serviceManager;
+	private HeaderWorker headerWorker;
 
 	public ClientConnectionRunnable(StreamConnection connection, int id) {
 		conn = connection;
 		serviceManager = new ServiceManager();
+		headerWorker = new HeaderWorker();
 		this.id = id;
 	}
 
@@ -49,7 +53,6 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 						// Read from the InputStream
 						bytes = din.read(buffer);
 						readMessage = new String(buffer, 0, bytes);
-						changeData(new InternMessage(readMessage, true, this.id));
 						respondToClient(out, readMessage);
 					} catch (Exception e) {
 						changeData(new InternMessage("Stop ConnectionsThreadUpper"));
@@ -81,12 +84,27 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	 * @throws IOException
 	 */
 	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
-		byte[] payLoadToSend = serviceManager.getAnswer(lineRead);
-		changeData(new InternMessage(serviceManager.getLastMsgSend(), false, this.id));
-		// for (int i = 0; i < payLoadToSend.length; i++) {
-		// out.write(payLoadToSend[i]);
-		// }
+		String payload = lineRead.substring(8, lineRead.length());
+		changeData(new InternMessage("PayLoad: " + payload, true, this.id));
+
+		byte[] header = lineRead.substring(0, 8).getBytes();
+		changeData(new InternMessage(header, true, this.id, headerWorker.extractLengthFromHeader(header),
+				headerWorker.extractIdFromHeader(header), headerWorker.extractChecksumFromHeader(header),
+				headerWorker.extractFaultyBitFromHeader(header)));
+
+		byte[] payLoadToSend = serviceManager.getAnswer(payload);
+		changeData(new InternMessage("Payload: " + serviceManager.getLastMsgSend(), false, this.id));
+		byte[] headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
+				headerWorker.extractIdFromHeader(header), false);
+		changeData(new InternMessage(headerToSend, false, this.id, headerWorker.extractLengthFromHeader(headerToSend),
+				headerWorker.extractIdFromHeader(headerToSend), headerWorker.extractChecksumFromHeader(headerToSend),
+				headerWorker.extractFaultyBitFromHeader(headerToSend)));
+		byte[] messageToSend = new byte[headerToSend.length + payLoadToSend.length];
+		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
+		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
+
 		out.write(payLoadToSend);
+		// System.out.println(header.toString());
 
 	}
 

@@ -76,4 +76,29 @@ public class InternMessage {
 
 	}
 
+	/**
+	 * Constructor to print headers nicely
+	 * 
+	 * @param headerToSend
+	 * @param _from
+	 * @param _id
+	 */
+	public InternMessage(byte[] headerToSend, boolean _from, int _id, int length, int msgID, int checksum,
+			boolean lastMsgCorrect) {
+		msg = "Header: \n";
+		msg += "Length: " + length + "\n";
+		msg += "Checksum: " + checksum + "\n";
+		msg += "MsgId: " + msgID + "\n";
+		msg += "LastMsgFaulty: " + lastMsgCorrect + "\n";
+		whatMsg = WhatMsg.CONNECTIONMSG;
+		id = _id;
+		from = _from;
+		firstMsg = false;
+		lastMsg = false;
+		if (from)
+			msg = "From: " + msg;
+		else
+			msg = "To: " + msg;
+	}
+
 }

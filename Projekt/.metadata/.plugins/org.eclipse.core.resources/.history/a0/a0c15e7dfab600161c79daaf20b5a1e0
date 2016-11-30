@@ -1,0 +1,9 @@
+package Model;
+/**
+ * This classes job is it to read and write the header.
+ * @author Niki+Nico
+ *
+ */
+public class HeaderWorker {
+
+}
