@@ -1,0 +1,21 @@
+package Services;
+/**
+ * This Service is the Service "0" 
+ * With it is the MK able to request a list of every Service there is.
+ * @author Niki
+ *
+ */
+public class ServiceRequestService extends Service {
+
+	public ServiceRequestService(int _id, String _name) {
+		super(_id, _name);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public byte[] getAnswer(String payload) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

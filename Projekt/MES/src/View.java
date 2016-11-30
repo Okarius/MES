@@ -38,7 +38,7 @@ public class View implements Observer {
 		controller = _controller;
 		addController();
 		showView = ShowView.DEBUGINFOS;
-		viewString = "";
+		viewString = "Debug:\n";
 	}
 
 	private void initialize() {
@@ -71,10 +71,10 @@ public class View implements Observer {
 		viewConnectionsButton.setName("viewConnectionButton");
 		frame.getContentPane().add(viewConnectionsButton);
 
-		viewDebugButton = new JButton("DebugInfos");
-		viewDebugButton.setBounds(498, 134, 117, 25);
-		viewDebugButton.setName("viewDebugButton");
-		frame.getContentPane().add(viewDebugButton);
+		 viewDebugButton = new JButton("DebugInfos");
+		 viewDebugButton.setBounds(498, 134, 117, 25);
+		 viewDebugButton.setName("viewDebugButton");
+		 frame.getContentPane().add(viewDebugButton);
 
 	}
 
@@ -90,14 +90,18 @@ public class View implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		// The storage saves every Message sent and received
 		Storage storage = (Storage) arg1;
-		switch (showView) {
+		switch (this.showView) {
 		case CONNECTION:
 			updateConnectionView(storage);
+			break;
 		case DEBUGINFOS:
 			updateDebuginfosView(storage);
+			break;
 		case DEVICE:
 			updateDeviceView(storage);
+			break;
 		default:
+		
 			break;
 		}
 		// Check if the dynamic Button have to change
@@ -144,8 +148,9 @@ public class View implements Observer {
 	 * the order the messages arrived
 	 */
 	private void updateDebuginfosView(Storage storage) {
-		viewString += storage.getLastDebugMsg().msg + "\n";
-		textField.setText(viewString);
+		 System.out.println(storage.getLastDebugMsg().msg);
+		 viewString += storage.getLastDebugMsg().msg + "\n";
+		 textField.setText(viewString);
 	}
 
 	private void updateConnectionView(Storage storage) {
@@ -155,7 +160,7 @@ public class View implements Observer {
 	public void addController() {
 		clearButton.addActionListener(controller);
 		viewConnectionsButton.addActionListener(controller);
-		viewDebugButton.addActionListener(controller);
+		 viewDebugButton.addActionListener(controller);
 	}
 
 	// *************ButtonsPressed********************//
@@ -199,7 +204,7 @@ public class View implements Observer {
 	 */
 	public void viewDebug(Storage storage) {
 		showView = ShowView.DEBUGINFOS;
-		viewString = "DebugInfos:  \n";
+		viewString = "DebugInfos: \n";
 		ArrayList<String> msgs = storage.getAllMsgsString();
 		String txt = "";
 		for (String m : msgs) {

@@ -2,7 +2,7 @@ package Model;
 
 /**
  * This classes job is it to read and write the header.
- * 
+ * The functions are Copied from "AndroidGroupe A""
  * @author Niki+Nico
  *
  */

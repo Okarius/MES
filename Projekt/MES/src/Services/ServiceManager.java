@@ -10,12 +10,13 @@ import java.util.ArrayList;
  * 
  * @author Nikolas
  */
+@SuppressWarnings("serial")
 public class ServiceManager extends ArrayList<Service> {
 
-	//The debug msg will be printed in the view
-	//Dont forget to set it!
+	// The debug msg will be printed in the view
+	// Dont forget to set it!
 	private String debugMsg;
-	
+
 	/**
 	 * Add every Service to this Constructor
 	 */
@@ -39,31 +40,33 @@ public class ServiceManager extends ArrayList<Service> {
 
 		// Is the first value a number(id)?
 		if (!isFirstValueNumeric(payloadArray[0])) {
-			// if non numeric first Letter it has to be Servies
-			if (payloadArray[0].compareTo("SERVICES") == 0) {
+			// non numeric and not services -> error
+			String msg = "Error;NonNumeric ID and not SERVICES";
+			sendMe = msg.getBytes();
+			debugMsg = msg;
+		} else {
+			int serviceId = Integer.valueOf(payloadArray[0]);
+			// Service id 0 is the request to send a list of all
+			// available services.
+			if (serviceId == 0) {
 				String servicesList = this.getServicesString();
 				sendMe = servicesList.getBytes();
 				debugMsg = "Services Send\n" + servicesList;
 			} else {
-				// non numeric and not services -> error
-				String msg = "Error;NonNumeric ID and not SERVICES";
-				sendMe = msg.getBytes();
-				debugMsg = msg;
+				Service service = getServiceById(serviceId);
+				// Check if id is a actuall Service
+				if (service != null) {
+					// The id exists, so we can use one of our services
+					sendMe = this.get(serviceId).getAnswer(payload);
+					debugMsg = this.get(serviceId).debugMsg;
+				} else {
+					// Invalid ID -> Send Error Message
+					String msg = "Error;Invalid ID";
+					sendMe = msg.getBytes();
+					debugMsg = msg;
+				}
 			}
-			// First value is a Number thus maybe an ID
-		} else {
-			int serviceId = Integer.valueOf(payloadArray[0]);
-			// can this ID exist?
-			if (validServiceId(serviceId)) {
-				// The id exists, so we can use one of our services
-				sendMe = this.get(serviceId).getAnswer(payload);
-				debugMsg = this.get(serviceId).debugMsg;
-			} else {
-				// Invalid ID -> Send Error Message
-				String msg = "Error;Invalid ID";
-				sendMe = msg.getBytes();
-				debugMsg = msg;
-			}
+
 		}
 		return sendMe;
 	}
@@ -81,21 +84,6 @@ public class ServiceManager extends ArrayList<Service> {
 			sendMe += service.id + ";" + service.name + "\n";
 		}
 		return sendMe;
-	}
-
-	/**
-	 * Funktion to check if an Id is Valid. Valid IDs are those which are
-	 * between 0 and the NumberOfServices.
-	 * 
-	 * @param serviceId
-	 * @return true if this id exists
-	 */
-	private boolean validServiceId(int serviceId) {
-		if (serviceId < 0)
-			return false;
-		if (serviceId >= this.size())
-			return false;
-		return true;
 	}
 
 	public String getLastMsgSend() {
@@ -116,5 +104,21 @@ public class ServiceManager extends ArrayList<Service> {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Function returns the service corresponding to the Id received in the
+	 * payload. If this Id does not exists it returns null Otherwise the correct
+	 * service
+	 * 
+	 * @param id
+	 * @return service if service exists, otherwise null
+	 */
+	private Service getServiceById(int id) {
+		for (int i = 0; i < this.size(); i++) {
+			if (this.get(i).id == id)
+				return this.get(i);
+		}
+		return null;
 	}
 }

@@ -1,0 +1,10 @@
+package Services;
+
+public class ServiceRequestService extends Service {
+
+	public ServiceRequestService(int _id, String _name) {
+		super(_id, _name);
+		// TODO Auto-generated constructor stub
+	}
+
+}
