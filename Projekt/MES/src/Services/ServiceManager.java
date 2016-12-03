@@ -41,7 +41,7 @@ public class ServiceManager extends ArrayList<Service> {
 		// Is the first value a number(id)?
 		if (!isFirstValueNumeric(payloadArray[0])) {
 			// non numeric and not services -> error
-			String msg = "Error;NonNumeric ID and not SERVICES";
+			String msg = "Error;NonNumeric ID";
 			sendMe = msg.getBytes();
 			debugMsg = msg;
 		} else {

@@ -58,9 +58,18 @@ public class InternMessage {
 		firstMsg = true;
 		lastMsg = false;
 	}
+	
+	public InternMessage connectionGone(){
+		this.lastMsg = true;
+		this.firstMsg = false;
+		return this;
+	}
+	
 
 	public void setAsLastMsg() {
 		lastMsg = true;
+		firstMsg = false;
+
 	}
 
 	/**
@@ -75,6 +84,8 @@ public class InternMessage {
 		lastMsg = false;
 
 	}
+
+	
 
 	/**
 	 * Constructor to print headers nicely

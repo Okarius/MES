@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Observable;
 
@@ -55,14 +56,16 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 						readMessage = new String(buffer, 0, bytes);
 						respondToClient(out, readMessage);
 					} catch (Exception e) {
-						changeData(new InternMessage("Stop ConnectionsThreadUpper"));
 					}
 				} else {
 					// Thread.sleep(100);
 				}
 			}
 		} catch (Exception e) {
-			changeData(new InternMessage("Stop ConnectionsThreadBottom"));
+			System.out.println("connectionGone " + this.id);
+			InternMessage msg = new InternMessage("Stop ConnectionsThread", this.id);
+			msg = msg.connectionGone();
+			changeData(msg);
 		}
 	}
 
@@ -71,7 +74,6 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		t.start();
 	}
 
-	// Services; 0 == Telefondienst
 	/**
 	 * This funktion handles every incoming msg and deceides how to answer. It
 	 * also send the Msgs thus it gets the DataOutputStream. What the Server
@@ -84,28 +86,39 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	 * @throws IOException
 	 */
 	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
-		String payload = lineRead.substring(8, lineRead.length());
-		changeData(new InternMessage("PayLoad: " + payload, true, this.id));
+		String payloadReceived = lineRead.substring(8, lineRead.length());
+		byte[] headerToSend = new byte[0];
+		byte[] payLoadToSend = new byte[0];
+		byte[] messageToSend = new byte[0];
+		byte[] headerReceived = lineRead.substring(0, 8).getBytes();
+		updateObserver(payloadReceived.getBytes(), headerReceived);
+		// Check if Checksum is correct
+		if (headerWorker.isChecksumCorrect(payloadReceived.getBytes(),
+				headerWorker.extractChecksumFromHeader(headerReceived))) {
+			// CHecksum is correct
+			payLoadToSend = serviceManager.getAnswer(payloadReceived);
 
-		byte[] header = lineRead.substring(0, 8).getBytes();
+			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
+					headerWorker.extractIdFromHeader(headerReceived), false);
+		} else {
+			// Checksum is faulty:
+			payLoadToSend = "Error;Fauly Checksum".getBytes();
+			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
+					headerWorker.extractIdFromHeader(headerReceived), true);
+		}
+		messageToSend = new byte[headerToSend.length + payLoadToSend.length];
+		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
+		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
+		updateObserver(payLoadToSend, headerToSend);
+		out.write(messageToSend);
+
+	}
+
+	private void updateObserver(byte[] payload, byte[] header) {
+		changeData(new InternMessage("PayLoad: " + new String(payload, StandardCharsets.UTF_8), true, this.id));
 		changeData(new InternMessage(header, true, this.id, headerWorker.extractLengthFromHeader(header),
 				headerWorker.extractIdFromHeader(header), headerWorker.extractChecksumFromHeader(header),
 				headerWorker.extractFaultyBitFromHeader(header)));
-
-		byte[] payLoadToSend = serviceManager.getAnswer(payload);
-		changeData(new InternMessage("Payload: " + serviceManager.getLastMsgSend(), false, this.id));
-		byte[] headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
-				headerWorker.extractIdFromHeader(header), false);
-		changeData(new InternMessage(headerToSend, false, this.id, headerWorker.extractLengthFromHeader(headerToSend),
-				headerWorker.extractIdFromHeader(headerToSend), headerWorker.extractChecksumFromHeader(headerToSend),
-				headerWorker.extractFaultyBitFromHeader(headerToSend)));
-		byte[] messageToSend = new byte[headerToSend.length + payLoadToSend.length];
-		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
-		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
-
-		out.write(payLoadToSend);
-		// System.out.println(header.toString());
-
 	}
 
 	private void changeData(Object data) {

@@ -49,14 +49,19 @@ public class View implements Observer {
 
 		JLabel lblFunctions = new JLabel("Functions");
 		lblFunctions.setBounds(394, 37, 70, 15);
-		frame.getContentPane().add(lblFunctions);
+		lblFunctions.setName("");
 
+		frame.getContentPane().add(lblFunctions);
 		JLabel lblView = new JLabel("View");
 		lblView.setBounds(508, 37, 70, 15);
+		lblView.setName("");
+
 		frame.getContentPane().add(lblView);
 
 		textField = new JTextArea();
 		textField.setBounds(12, 12, 332, 511);
+		textField.setName("");
+
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 
@@ -71,10 +76,10 @@ public class View implements Observer {
 		viewConnectionsButton.setName("viewConnectionButton");
 		frame.getContentPane().add(viewConnectionsButton);
 
-		 viewDebugButton = new JButton("DebugInfos");
-		 viewDebugButton.setBounds(498, 134, 117, 25);
-		 viewDebugButton.setName("viewDebugButton");
-		 frame.getContentPane().add(viewDebugButton);
+		viewDebugButton = new JButton("DebugInfos");
+		viewDebugButton.setBounds(498, 134, 117, 25);
+		viewDebugButton.setName("viewDebugButton");
+		frame.getContentPane().add(viewDebugButton);
 
 	}
 
@@ -101,7 +106,7 @@ public class View implements Observer {
 			updateDeviceView(storage);
 			break;
 		default:
-		
+
 			break;
 		}
 		// Check if the dynamic Button have to change
@@ -116,6 +121,17 @@ public class View implements Observer {
 	 * connection will be printed. It creates every Button new.
 	 */
 	public void updateDynamicButtons(Storage storage) {
+		InternMessage lastMsg = storage.getLastDebugMsg();
+		if (lastMsg.lastMsg) {
+			for (int i = 0; i < frame.getContentPane().getComponentCount(); i++) {
+				if (frame.getContentPane().getComponent(i).getName() != null) {
+					if (frame.getContentPane().getComponent(i).getName().compareTo("deviceButton;" + lastMsg.id) == 0) {
+						frame.remove(frame.getContentPane().getComponent(i));
+					}
+				}
+
+			}
+		}
 		ArrayList<Integer> allIds = storage.getAllIdsFromRunningConnections();
 		newButtons = new JButton[allIds.size()];
 		for (int i = 0; i < allIds.size(); i++) {
@@ -124,9 +140,10 @@ public class View implements Observer {
 			button.addActionListener(this.controller);
 			button.setName("deviceButton;" + id);
 			button.setBounds(viewConnectionsButton.getX(), viewConnectionsButton.getY() + 50 * (i + 1), 117, 25);
-			frame.getContentPane().add(button);
 			newButtons[i] = button;
+			frame.getContentPane().add(newButtons[i]);
 		}
+		frame.repaint();
 	}
 
 	/**
@@ -148,9 +165,8 @@ public class View implements Observer {
 	 * the order the messages arrived
 	 */
 	private void updateDebuginfosView(Storage storage) {
-		 System.out.println(storage.getLastDebugMsg().msg);
-		 viewString += storage.getLastDebugMsg().msg + "\n";
-		 textField.setText(viewString);
+		viewString += storage.getLastDebugMsg().msg + "\n";
+		textField.setText(viewString);
 	}
 
 	private void updateConnectionView(Storage storage) {
@@ -160,7 +176,7 @@ public class View implements Observer {
 	public void addController() {
 		clearButton.addActionListener(controller);
 		viewConnectionsButton.addActionListener(controller);
-		 viewDebugButton.addActionListener(controller);
+		viewDebugButton.addActionListener(controller);
 	}
 
 	// *************ButtonsPressed********************//
@@ -205,7 +221,7 @@ public class View implements Observer {
 	public void viewDebug(Storage storage) {
 		showView = ShowView.DEBUGINFOS;
 		viewString = "DebugInfos: \n";
-		ArrayList<String> msgs = storage.getAllMsgsString();
+		ArrayList<String> msgs = storage.getDebugString();
 		String txt = "";
 		for (String m : msgs) {
 			txt += m + "\n";

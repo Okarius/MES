@@ -1,8 +1,9 @@
 package Model;
 
 /**
- * This classes job is it to read and write the header.
- * The functions are Copied from "AndroidGroupe A""
+ * This classes job is it to read and write the header. The functions are Copied
+ * from "AndroidGroupe A""
+ * 
  * @author Niki+Nico
  *
  */
@@ -60,5 +61,9 @@ public class HeaderWorker {
 	public boolean extractFaultyBitFromHeader(byte[] header) {
 		int faultyBit = 1 << 6;
 		return (header[6] & faultyBit) == faultyBit;
+	}
+
+	public boolean isChecksumCorrect(final byte[] message, final short checksum) {
+		return createChecksum(message) == checksum;
 	}
 }
