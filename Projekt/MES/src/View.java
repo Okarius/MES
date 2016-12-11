@@ -1,20 +1,16 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import Container.InternMessage;
 import Container.InternMessage.WhatMsg;
 import Container.Storage;
-import Model.Server;
-
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 enum ShowView {
@@ -25,6 +21,7 @@ public class View implements Observer {
 
 	private JFrame frame;
 	private JTextArea textField;
+	private JScrollPane scrollPane;
 	private JButton clearButton, viewDebugButton, viewConnectionsButton;
 	private JButton[] newButtons;
 	private ShowView showView;
@@ -39,6 +36,7 @@ public class View implements Observer {
 		addController();
 		showView = ShowView.DEBUGINFOS;
 		viewString = "Debug:\n";
+
 	}
 
 	private void initialize() {
@@ -55,20 +53,16 @@ public class View implements Observer {
 		JLabel lblView = new JLabel("View");
 		lblView.setBounds(508, 37, 70, 15);
 		lblView.setName("");
-
 		frame.getContentPane().add(lblView);
-
+		scrollPane = new JScrollPane();
 		textField = new JTextArea();
-		textField.setBounds(12, 12, 332, 511);
+		scrollPane.setBounds(12, 12, 332, 511);
 		textField.setName("");
-		textField.setLineWrap(true);
-		textField.setWrapStyleWord(true);
-		//String longString = "";
-		//for (int i = 0; i < 1000; i++)
-		//	longString += "TEST\n";
-		//textField.setText(longString);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		// textField.setLineWrap(true);
+		// textField.setWrapStyleWord(true);
+		scrollPane.setViewportView(textField);
+
+		frame.getContentPane().add(scrollPane);
 
 		clearButton = new JButton("ResetServer");
 		clearButton.setBounds(369, 86, 117, 25);
@@ -118,6 +112,7 @@ public class View implements Observer {
 		if (storage.connectionsChanged()) {
 			updateDynamicButtons(storage);
 		}
+
 	}
 
 	/**
@@ -175,7 +170,8 @@ public class View implements Observer {
 	}
 
 	private void updateConnectionView(Storage storage) {
-		textField.setText("Number of Connection: " + storage.getNumberOfConections());
+		textField.setText("Number of Connections: " + storage.getNumberOfConections());
+
 	}
 
 	public void addController() {
@@ -215,7 +211,8 @@ public class View implements Observer {
 	 */
 	public void viewConnection(Storage storage) {
 		showView = ShowView.CONNECTION;
-		textField.setText("Number of Connection: " + storage.getNumberOfConections());
+		textField.setText("Number of Connections: " + storage.getNumberOfConections());
+
 	}
 
 	/**

@@ -80,7 +80,7 @@ public class HeaderWorker {
 	 * Casts unsigned bytes to unsigned integers.
 	 */
 	private int byteToInt(byte b) {
-		return ((int) b) & 0xFF;
+		return (b) & 0xFF;
 	}
 
 }

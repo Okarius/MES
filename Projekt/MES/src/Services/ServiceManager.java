@@ -2,8 +2,6 @@ package Services;
 
 import java.util.ArrayList;
 
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
 /**
  * This class Manages every Service. It gets the Message Payload and gives it to
  * the correct Service. The Service returns then the Answer and the

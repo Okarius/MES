@@ -3,14 +3,11 @@ package Model;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Observable;
 
 import javax.microedition.io.StreamConnection;
-
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import Container.InternMessage;
 import Model.HeaderWorker.ContentType;
