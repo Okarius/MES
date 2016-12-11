@@ -10,6 +10,8 @@ import java.util.Observable;
 
 import javax.microedition.io.StreamConnection;
 
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+
 import Container.InternMessage;
 import Model.HeaderWorker.ContentType;
 import Services.ServiceManager;
@@ -46,15 +48,14 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			DataInputStream din = new DataInputStream(conn.openInputStream());
 			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
 			while (true) {
-				byte[] buffer = new byte[(int) Math.pow(10, 9)];
-				String readMessage;
-				int bytes;
+				byte[] buffer = new byte[(int) Math.pow(10, 3)];
+				// String readMessage;
 				if (din.available() > 0) {
 					try {
 						// Read from the InputStream
-						bytes = din.read(buffer);
-						readMessage = new String(buffer, 0, bytes);
-						respondToClient(out, readMessage);
+						int bytes = din.read(buffer);
+						String readMessage = new String(buffer, 8, bytes - 8);
+						respondToClient(out, buffer, readMessage);
 					} catch (Exception e) {
 					}
 				} else {
@@ -62,7 +63,6 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("connectionGone " + this.id);
 			InternMessage msg = new InternMessage("Stop ConnectionsThread", this.id);
 			msg = msg.connectionGone();
 			changeData(msg);
@@ -83,40 +83,45 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	 * 
 	 * @param out
 	 * @param lineRead
+	 * @param readMessage
 	 * @throws IOException
 	 */
-	private void respondToClient(DataOutputStream out, String lineRead) throws IOException {
-		String payloadReceived = lineRead.substring(8, lineRead.length());
+	private void respondToClient(DataOutputStream out, byte[] lineRead, String readMessage) throws IOException {
+
+		String payloadReceived = readMessage;
+
 		byte[] headerToSend = new byte[0];
 		byte[] payLoadToSend = new byte[0];
 		byte[] messageToSend = new byte[0];
-		byte[] headerReceived = lineRead.substring(0, 8).getBytes();
-		updateObserver(payloadReceived.getBytes(), headerReceived);
+		byte[] headerReceived = Arrays.copyOfRange(lineRead, 0, 8);
+		byte[] payloadReceivedBytes = Arrays.copyOfRange(lineRead, 8, lineRead.length);
+		System.out.println("convertierungWorks");
+		updateObserver(payloadReceivedBytes, headerReceived, true);
 		// Check if Checksum is correct
-		if (headerWorker.isChecksumCorrect(payloadReceived.getBytes(),
+		if (headerWorker.isChecksumCorrect(payloadReceivedBytes,
 				headerWorker.extractChecksumFromHeader(headerReceived))) {
 			// CHecksum is correct
-			payLoadToSend = serviceManager.getAnswer(payloadReceived);
-
+			payLoadToSend = serviceManager.getAnswer(new String(readMessage));
 			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
 					headerWorker.extractIdFromHeader(headerReceived), false);
 		} else {
 			// Checksum is faulty:
-			payLoadToSend = "Error;Fauly Checksum".getBytes();
+			payLoadToSend = "Error;Faulty Checksum".getBytes();
 			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
 					headerWorker.extractIdFromHeader(headerReceived), true);
 		}
 		messageToSend = new byte[headerToSend.length + payLoadToSend.length];
+		System.out.println(messageToSend);
 		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
 		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
-		updateObserver(payLoadToSend, headerToSend);
+		System.out.println("still");
 		out.write(messageToSend);
-
+		updateObserver(payLoadToSend, headerToSend, false);
 	}
 
-	private void updateObserver(byte[] payload, byte[] header) {
-		changeData(new InternMessage("PayLoad: " + new String(payload, StandardCharsets.UTF_8), true, this.id));
-		changeData(new InternMessage(header, true, this.id, headerWorker.extractLengthFromHeader(header),
+	private void updateObserver(byte[] payload, byte[] header, boolean from) {
+		changeData(new InternMessage("PayLoad: " + new String(payload, StandardCharsets.UTF_8), from, this.id));
+		changeData(new InternMessage(header, from, this.id, headerWorker.extractLengthFromHeader(header),
 				headerWorker.extractIdFromHeader(header), headerWorker.extractChecksumFromHeader(header),
 				headerWorker.extractFaultyBitFromHeader(header)));
 	}

@@ -61,7 +61,12 @@ public class View implements Observer {
 		textField = new JTextArea();
 		textField.setBounds(12, 12, 332, 511);
 		textField.setName("");
-
+		textField.setLineWrap(true);
+		textField.setWrapStyleWord(true);
+		//String longString = "";
+		//for (int i = 0; i < 1000; i++)
+		//	longString += "TEST\n";
+		//textField.setText(longString);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 

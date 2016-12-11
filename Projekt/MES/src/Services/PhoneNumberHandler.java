@@ -1,13 +1,14 @@
 package Services;
 
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 
 /**
  * 
@@ -17,13 +18,11 @@ import java.util.Arrays;
 class CSVEntry {
 	public String id;
 	public String firstName;
-	public String secondName;
 	public String number;
 
-	public CSVEntry(String _id, String _firstName, String _secondName, String _number) {
+	public CSVEntry(String _id, String _firstName, String _number) {
 		this.id = _id;
 		this.firstName = _firstName;
-		this.secondName = _secondName;
 		this.number = _number;
 	}
 }
@@ -40,7 +39,8 @@ public class PhoneNumberHandler {
 			BufferedReader br = new BufferedReader(new FileReader(path));
 			while ((line = br.readLine()) != null) {
 				String[] lineArray = line.split(cvsSplitBy);
-				CSVEntries.add(new CSVEntry(lineArray[0], lineArray[1], lineArray[2], lineArray[3]));
+				System.out.println(line);
+				CSVEntries.add(new CSVEntry(lineArray[0], lineArray[1], lineArray[2]));
 			}
 
 		} catch (FileNotFoundException e) {
@@ -76,5 +76,63 @@ public class PhoneNumberHandler {
 			}
 		}
 		return "NUMBER NOT FOUND";
+	}
+	
+	public String getAllNumbers() {		//tut das?
+		String numbers = "";
+		for (CSVEntry e : CSVEntries) {
+			numbers += e.firstName +" : "+e.number +"\n";
+		}
+		return numbers;
+	}
+	
+	public String addNewNumber(String firstName, String number) {
+		
+		
+		if(firstName == "") {
+			return "No valid FIRSTNAME";
+		}
+		else if (number == "") {
+			return "No valid PHONENUMBER";
+		}
+		else {
+			String id = CSVEntries.size() + 1+"";
+			
+			CSVEntries.add(new CSVEntry(id,firstName, number));
+			writeToCSV(CSVEntries);
+		}
+		
+		return "Number added";
+	}
+	
+	public String deletePhoneNumber(String id) {
+		for (CSVEntry e : CSVEntries) {
+			if (e.id.equals(id)) {
+				CSVEntries.remove(e);
+				writeToCSV(CSVEntries);
+				return "Number deleted";
+			}
+		}
+		return "Number not found";
+	}
+	
+	public void writeToCSV(ArrayList<CSVEntry> CSVEntries) {
+		
+		String csvString = "";
+		for (CSVEntry e : CSVEntries) {
+			csvString = e.id +";"+ e.firstName + ";" + e.number + "\n";
+		}
+		
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter("phoneNumbers.csv"));
+			bw.write(csvString);
+			
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }
