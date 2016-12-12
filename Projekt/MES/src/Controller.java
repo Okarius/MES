@@ -31,13 +31,9 @@ public class Controller implements ActionListener {
 		String name = ((JButton) e.getSource()).getName();
 		String[] names = name.split(";");
 		switch (names[0]) {
-		case "clearButton":
-			System.out.println("clearme");
+
 		case "viewConnectionButton":
 			view.viewConnection(server.getStorage());
-			break;
-		case "viewDebugButton":
-			view.viewDebug(server.getStorage());
 			break;
 		case "deviceButton":
 			view.viewDeviceConnection(Integer.valueOf(names[1]), server.getStorage());

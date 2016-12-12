@@ -60,8 +60,8 @@ public class AllConnectionsRunnable extends Observable implements Runnable, Obse
 				connection = notifier.acceptAndOpen();
 				// new connection->create new connection Thread
 				ClientConnectionRunnable connThread = new ClientConnectionRunnable(connection, lastId);
+
 				// update view with InterMessage (firstMessage = true)
-				changeData(new InternMessage("New Connection, ID: ", lastId));
 				lastId++; // update id, thus every connection has different id
 				// AllConnectionRunnable observes every connection thread
 				connThread.addObserver(this);

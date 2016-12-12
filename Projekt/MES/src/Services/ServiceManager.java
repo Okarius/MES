@@ -21,8 +21,7 @@ public class ServiceManager extends ArrayList<Service> {
 	 * Add every Service to this Constructor
 	 */
 	public ServiceManager() {
-		// this.add(new SecretaryPhoneNumberService(101,
-		// "SecretaryPhoneNumber"));
+
 		this.add(new PhoneNumberService(101, "PhoneNumberService"));
 	}
 
@@ -37,7 +36,6 @@ public class ServiceManager extends ArrayList<Service> {
 	 */
 	@SuppressWarnings("unused")
 	public byte[] getAnswer(String payload) {
-		System.out.println("startGetAnwer");
 		String[] payloadArray = payload.split(";");
 		byte[] sendMe = "Invalid Payload".getBytes();
 		debugMsg = "Error;Invalid Payload";
@@ -49,7 +47,6 @@ public class ServiceManager extends ArrayList<Service> {
 			sendMe = msg.getBytes();
 			debugMsg = msg;
 		} else {
-			System.out.println("NumericIDFound");
 			int serviceId = Integer.valueOf(payloadArray[0]);
 			// Service id 0 is the request to send a list of all
 			// available services.
@@ -58,15 +55,11 @@ public class ServiceManager extends ArrayList<Service> {
 				sendMe = servicesList.getBytes();
 				debugMsg = "Services Send\n" + servicesList;
 			} else {
-				System.out.println("NOTALLSERVICES " + serviceId);
 				Service service = getServiceById(serviceId);
-				System.out.println("serviceFound " + service.name);
 				// Check if id is a actuall Service
 				if (service != null) {
-					System.out.println("serviceNotNull");
 					// The id exists, so we can use one of our services
 					sendMe = service.getAnswer(payload);
-					System.out.println("sendMeFound");
 					debugMsg = service.debugMsg;
 
 				} else {
@@ -78,7 +71,6 @@ public class ServiceManager extends ArrayList<Service> {
 			}
 
 		}
-		System.out.println("senfMeFound");
 		return sendMe;
 
 	}
@@ -132,5 +124,14 @@ public class ServiceManager extends ArrayList<Service> {
 				return this.get(i);
 		}
 		return null;
+	}
+
+	public boolean pictureRequested(String string) {
+		for (int i = 0; i < this.size(); i++) {
+			if (this.get(i).name.toLowerCase().contains("picture".toLowerCase()))
+				return true;
+
+		}
+		return false;
 	}
 }

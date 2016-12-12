@@ -30,6 +30,8 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	private int id;
 	private ServiceManager serviceManager;
 	private HeaderWorker headerWorker;
+	private byte[] lastHeaderSend;
+	private byte[] lastPayloadSend;
 
 	public ClientConnectionRunnable(StreamConnection connection, int id) {
 		conn = connection;
@@ -40,8 +42,8 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 
 	@Override
 	public void run() {
+		changeData(new InternMessage("New Connection, ID: ", this.id));
 		try {
-			changeData(new InternMessage("Start ConnectionsThread"));
 			DataInputStream din = new DataInputStream(conn.openInputStream());
 			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
 			while (true) {
@@ -85,42 +87,54 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	 */
 	private void respondToClient(DataOutputStream out, byte[] lineRead, String readMessage) throws IOException {
 
-		String payloadReceived = readMessage;
-
 		byte[] headerToSend = new byte[0];
 		byte[] payLoadToSend = new byte[0];
 		byte[] messageToSend = new byte[0];
 		byte[] headerReceived = Arrays.copyOfRange(lineRead, 0, 8);
 		byte[] payloadReceivedBytes = Arrays.copyOfRange(lineRead, 8, lineRead.length);
-		System.out.println("convertierungWorks");
+		HeaderStorage headerObjectReceived = headerWorker.getHeaderStorageObject(headerReceived);
+
 		updateObserver(payloadReceivedBytes, headerReceived, true);
-		// Check if Checksum is correct
-		if (headerWorker.isChecksumCorrect(payloadReceivedBytes,
-				headerWorker.extractChecksumFromHeader(headerReceived))) {
-			// CHecksum is correct
-			payLoadToSend = serviceManager.getAnswer(new String(readMessage));
-			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
-					headerWorker.extractIdFromHeader(headerReceived), false);
-		} else {
-			// Checksum is faulty:
-			payLoadToSend = "Error;Faulty Checksum".getBytes();
-			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING,
-					headerWorker.extractIdFromHeader(headerReceived), true);
+		if (headerObjectReceived.faultyBit) { // did the last message failed?
+			// If it failed resend it!
+			headerToSend = lastHeaderSend;
+			payLoadToSend = lastPayloadSend;
+		} else { // Last Package tge server sent was ok
+			// Check if Checksum is correct
+			if (headerWorker.isChecksumCorrect(payloadReceivedBytes, headerObjectReceived.checkSum)) {
+				// CHecksum is correct
+				payLoadToSend = serviceManager.getAnswer(new String(readMessage));
+
+				// Check if the headerToSend needs string or raw written in
+				if (serviceManager.pictureRequested(new String(readMessage))) {
+					headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.RAW, headerObjectReceived.id,
+							false);
+				} else {
+					headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id,
+							false);
+				}
+			} else {
+				// Checksum is faulty:
+				payLoadToSend = "Error;Faulty Checksum".getBytes();
+				headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id,
+						true);
+			}
+
 		}
 		messageToSend = new byte[headerToSend.length + payLoadToSend.length];
-		System.out.println(messageToSend);
 		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
 		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
-		System.out.println("still");
 		out.write(messageToSend);
+		lastHeaderSend = headerToSend;
+		lastPayloadSend = payLoadToSend;
 		updateObserver(payLoadToSend, headerToSend, false);
 	}
 
 	private void updateObserver(byte[] payload, byte[] header, boolean from) {
+		HeaderStorage headerObjUpdate = headerWorker.getHeaderStorageObject(header);
 		changeData(new InternMessage("PayLoad: " + new String(payload, StandardCharsets.UTF_8), from, this.id));
-		changeData(new InternMessage(header, from, this.id, headerWorker.extractLengthFromHeader(header),
-				headerWorker.extractIdFromHeader(header), headerWorker.extractChecksumFromHeader(header),
-				headerWorker.extractFaultyBitFromHeader(header)));
+		changeData(new InternMessage(header, from, this.id, headerObjUpdate.length, headerObjUpdate.id,
+				headerObjUpdate.checkSum, headerObjUpdate.faultyBit));
 	}
 
 	private void changeData(Object data) {

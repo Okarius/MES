@@ -4,17 +4,14 @@ import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.SwingConstants;
-
-import Container.InternMessage;
-import Container.InternMessage.WhatMsg;
-import Container.Storage;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import Container.InternMessage;
+import Container.Storage;
+
 enum ShowView {
-	DEBUGINFOS, CONNECTION, DEVICE
+	CONNECTION, DEVICE
 }
 
 public class View implements Observer {
@@ -22,7 +19,7 @@ public class View implements Observer {
 	private JFrame frame;
 	private JTextArea textField;
 	private JScrollPane scrollPane;
-	private JButton clearButton, viewDebugButton, viewConnectionsButton;
+	private JButton viewConnectionsButton;
 	private JButton[] newButtons;
 	private ShowView showView;
 	private String viewString;
@@ -34,8 +31,6 @@ public class View implements Observer {
 		frame.setVisible(true);
 		controller = _controller;
 		addController();
-		showView = ShowView.DEBUGINFOS;
-		viewString = "Debug:\n";
 
 	}
 
@@ -45,15 +40,6 @@ public class View implements Observer {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
-		JLabel lblFunctions = new JLabel("Functions");
-		lblFunctions.setBounds(394, 37, 70, 15);
-		lblFunctions.setName("");
-
-		frame.getContentPane().add(lblFunctions);
-		JLabel lblView = new JLabel("View");
-		lblView.setBounds(508, 37, 70, 15);
-		lblView.setName("");
-		frame.getContentPane().add(lblView);
 		scrollPane = new JScrollPane();
 		textField = new JTextArea();
 		scrollPane.setBounds(12, 12, 332, 511);
@@ -64,21 +50,10 @@ public class View implements Observer {
 
 		frame.getContentPane().add(scrollPane);
 
-		clearButton = new JButton("ResetServer");
-		clearButton.setBounds(369, 86, 117, 25);
-		clearButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		clearButton.setName("clearButton");
-		frame.getContentPane().add(clearButton);
-
 		viewConnectionsButton = new JButton("Connections");
 		viewConnectionsButton.setBounds(499, 182, 117, 25);
 		viewConnectionsButton.setName("viewConnectionButton");
 		frame.getContentPane().add(viewConnectionsButton);
-
-		viewDebugButton = new JButton("DebugInfos");
-		viewDebugButton.setBounds(498, 134, 117, 25);
-		viewDebugButton.setName("viewDebugButton");
-		frame.getContentPane().add(viewDebugButton);
 
 	}
 
@@ -98,9 +73,7 @@ public class View implements Observer {
 		case CONNECTION:
 			updateConnectionView(storage);
 			break;
-		case DEBUGINFOS:
-			updateDebuginfosView(storage);
-			break;
+
 		case DEVICE:
 			updateDeviceView(storage);
 			break;
@@ -108,11 +81,11 @@ public class View implements Observer {
 
 			break;
 		}
+
 		// Check if the dynamic Button have to change
 		if (storage.connectionsChanged()) {
 			updateDynamicButtons(storage);
 		}
-
 	}
 
 	/**
@@ -121,7 +94,7 @@ public class View implements Observer {
 	 * connection will be printed. It creates every Button new.
 	 */
 	public void updateDynamicButtons(Storage storage) {
-		InternMessage lastMsg = storage.getLastDebugMsg();
+		InternMessage lastMsg = storage.getLastMsg();
 		if (lastMsg.lastMsg) {
 			for (int i = 0; i < frame.getContentPane().getComponentCount(); i++) {
 				if (frame.getContentPane().getComponent(i).getName() != null) {
@@ -151,22 +124,11 @@ public class View implements Observer {
 	 * 
 	 */
 	private void updateDeviceView(Storage storage) {
-		InternMessage lastMsg = storage.getLastDebugMsg();
-		if (lastMsg.whatMsg == WhatMsg.CONNECTIONMSG) {
-			if (lastMsg.id == conId) {
-				viewString += lastMsg.msg + "\n";
-				textField.setText(viewString);
-			}
+		InternMessage lastMsg = storage.getLastMsg();
+		if (lastMsg.id == conId) {
+			viewString += lastMsg.msg + "\n";
+			textField.setText(viewString);
 		}
-	}
-
-	/**
-	 * Adds the last msg to the view Since the Debug view shows everything in
-	 * the order the messages arrived
-	 */
-	private void updateDebuginfosView(Storage storage) {
-		viewString += storage.getLastDebugMsg().msg + "\n";
-		textField.setText(viewString);
 	}
 
 	private void updateConnectionView(Storage storage) {
@@ -175,9 +137,7 @@ public class View implements Observer {
 	}
 
 	public void addController() {
-		clearButton.addActionListener(controller);
 		viewConnectionsButton.addActionListener(controller);
-		viewDebugButton.addActionListener(controller);
 	}
 
 	// *************ButtonsPressed********************//
@@ -213,23 +173,6 @@ public class View implements Observer {
 		showView = ShowView.CONNECTION;
 		textField.setText("Number of Connections: " + storage.getNumberOfConections());
 
-	}
-
-	/**
-	 * The debugView shows everything in the order the message arrives.
-	 * 
-	 * @param storage
-	 */
-	public void viewDebug(Storage storage) {
-		showView = ShowView.DEBUGINFOS;
-		viewString = "DebugInfos: \n";
-		ArrayList<String> msgs = storage.getDebugString();
-		String txt = "";
-		for (String m : msgs) {
-			txt += m + "\n";
-		}
-		viewString += txt;
-		textField.setText(viewString);
 	}
 
 }

@@ -61,7 +61,6 @@ class ConnectionStorage {
 
 	private int id;
 	private ArrayList<String> msgs;
-
 	public ConnectionStorage(int _id) {
 		id = _id;
 		msgs = new ArrayList<>();

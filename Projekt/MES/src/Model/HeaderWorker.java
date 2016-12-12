@@ -40,7 +40,7 @@ public class HeaderWorker {
 		return bytes;
 	}
 
-	public short createChecksum(final byte[] message) {
+	private short createChecksum(final byte[] message) {
 		short checksum = 0;
 
 		for (byte b : message) {
@@ -54,24 +54,24 @@ public class HeaderWorker {
 		return createChecksum(message) == checksum;
 	}
 
-	public ContentType extractContentTypeFromHeader(byte[] header) {
+	private ContentType extractContentTypeFromHeader(byte[] header) {
 		return ContentType.values()[byteToInt(header[6]) & (1 << 7)];
 	}
 
-	public int extractLengthFromHeader(byte[] header) {
+	private int extractLengthFromHeader(byte[] header) {
 		return (byteToInt(header[0]) << 24) | (byteToInt(header[1]) << 16) | (byteToInt(header[2]) << 8)
 				| byteToInt(header[3]);
 	}
 
-	public short extractChecksumFromHeader(byte[] header) {
+	private short extractChecksumFromHeader(byte[] header) {
 		return (short) ((byteToInt(header[4]) << 8) | byteToInt(header[5]));
 	}
 
-	public short extractIdFromHeader(byte[] header) {
+	private short extractIdFromHeader(byte[] header) {
 		return (short) ((Byte.toUnsignedInt(header[6]) & 0b111111) << 8 | Byte.toUnsignedInt(header[7]));
 	}
 
-	public boolean extractFaultyBitFromHeader(byte[] header) {
+	private boolean extractFaultyBitFromHeader(byte[] header) {
 		int faultyBit = 1 << 6;
 		return (byteToInt(header[6]) & faultyBit) == faultyBit;
 	}
@@ -83,4 +83,20 @@ public class HeaderWorker {
 		return (b) & 0xFF;
 	}
 
+	public HeaderStorage getHeaderStorageObject(byte[] headerReceivedBytes) {
+		HeaderStorage newhdrstor = new HeaderStorage();
+		newhdrstor.checkSum = extractChecksumFromHeader(headerReceivedBytes);
+		newhdrstor.length = extractLengthFromHeader(headerReceivedBytes);
+		newhdrstor.faultyBit = extractFaultyBitFromHeader(headerReceivedBytes);
+		newhdrstor.id = extractIdFromHeader(headerReceivedBytes);
+		return newhdrstor;
+	}
+
+}
+
+class HeaderStorage {
+	public int length;
+	public short checkSum;
+	public short id;
+	public boolean faultyBit;
 }
