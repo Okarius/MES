@@ -1,4 +1,8 @@
 package Services;
+
+import ServicesHandlers.QuizHandler;
+import ServicesHandlers.UserHandler;
+
 /**
  * 
  * @author Nico
@@ -6,8 +10,7 @@ package Services;
  */
 
 
-
-public class QuizService extends Service{
+public class QuizService extends Service {
 
 	private QuizHandler quizHandler;
 	private UserHandler userHandler;
@@ -17,54 +20,50 @@ public class QuizService extends Service{
 		quizHandler = new QuizHandler();
 
 	}
-	
-	
+
 	@Override
 	public byte[] getAnswer(String payload) {
-		
+
 		String[] payloadArray = this.getArgumentsArray(payload);
 		String msg = "";
-		
-		/*TODO switch cases anpassen*/
-		
-		/* 
-		 * case 0: register new player
-		 * case 1: request question by id
-		 * case 2: incoming id and answer from client, 
-		 * send back if answer is correct or not
-		 * */
-		
+
+		/*
+		 * case 0: register new player case 1: request question by id case 2:
+		 * incoming id and answer from client, send back if answer is correct or
+		 * not
+		 */
+
 		switch (payloadArray[0]) {
-			
+
 		case "0":
-			msg = userHandler.addPlayer(payloadArray[0]);
-			break;
-		
-		case "1":
-			msg = quizHandler.getQuestionById(payloadArray[0]);
-			break;
-			
-		case "2":
 			String answer = quizHandler.getAnswerById(payloadArray[0]);
-			if(answer.equals(payloadArray[1])) {
+			if (answer.equals(payloadArray[1])) {
 				msg = "correct";
 				userHandler.increaseHighscore(payloadArray[0]);
-			}
-			else {
+			} else {
 				msg = "wrong";
 			}
 			break;
-				
-			
-			
+
+		case "1":
+			msg = quizHandler.getQuestionById(payloadArray[0]);
+			break;
+
+		case "2":
+			msg = userHandler.addPlayer(payloadArray[0]);
+			break;
+		case "3":
+			msg = quizHandler.newGame();
+			break;
+
 		default:
 			msg = "Illegal arguments for Service Quiz";
-			break;	
-		
+			break;
+
 		}
 		debugMsg = msg;
 		return msg.getBytes();
-		
+
 	}
 
 }

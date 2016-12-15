@@ -31,7 +31,7 @@ public class View implements Observer {
 		frame.setVisible(true);
 		controller = _controller;
 		addController();
-
+		showView = ShowView.CONNECTION;
 	}
 
 	private void initialize() {
@@ -69,17 +69,10 @@ public class View implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		// The storage saves every Message sent and received
 		Storage storage = (Storage) arg1;
-		switch (this.showView) {
-		case CONNECTION:
+		if (this.showView == ShowView.CONNECTION) {
 			updateConnectionView(storage);
-			break;
-
-		case DEVICE:
+		} else {
 			updateDeviceView(storage);
-			break;
-		default:
-
-			break;
 		}
 
 		// Check if the dynamic Button have to change

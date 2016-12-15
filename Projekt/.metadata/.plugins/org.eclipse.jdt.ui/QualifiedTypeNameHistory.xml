@@ -44,7 +44,12 @@
 <fullyQualifiedTypeName name="Model.HeaderWorker"/>
 <fullyQualifiedTypeName name="Model.HeaderWorker.ContentType"/>
 <fullyQualifiedTypeName name="java.lang.reflect.Array"/>
-<fullyQualifiedTypeName name="java.util.Arrays"/>
-<fullyQualifiedTypeName name="Container.InternMessage"/>
 <fullyQualifiedTypeName name="Services.Service"/>
+<fullyQualifiedTypeName name="Model.Header"/>
+<fullyQualifiedTypeName name="Model.HeaderStorage"/>
+<fullyQualifiedTypeName name="Container.InternMessage"/>
+<fullyQualifiedTypeName name="Services.CSVEntry"/>
+<fullyQualifiedTypeName name="Services.QuizService"/>
+<fullyQualifiedTypeName name="Services.QuizHandler"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
 </qualifiedTypeNameHistroy>

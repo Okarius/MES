@@ -53,7 +53,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 					try {
 						// Read from the InputStream
 						int bytes = din.read(buffer);
-						String readMessage = new String(buffer, 8, bytes - 8);
+						String readMessage = new String(buffer, 8, bytes - 9);
 						respondToClient(out, buffer, readMessage);
 					} catch (Exception e) {
 					}
@@ -101,25 +101,18 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			payLoadToSend = lastPayloadSend;
 		} else { // Last Package tge server sent was ok
 			// Check if Checksum is correct
-			if (headerWorker.isChecksumCorrect(payloadReceivedBytes, headerObjectReceived.checkSum)) {
-				// CHecksum is correct
+			if (headerWorker.isChecksumCorrect(payloadReceivedBytes, headerObjectReceived.checkSum))
 				payLoadToSend = serviceManager.getAnswer(new String(readMessage));
-
-				// Check if the headerToSend needs string or raw written in
-				if (serviceManager.pictureRequested(new String(readMessage))) {
-					headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.RAW, headerObjectReceived.id,
-							false);
-				} else {
-					headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id,
-							false);
-				}
-			} else {
-				// Checksum is faulty:
+			else
 				payLoadToSend = "Error;Faulty Checksum".getBytes();
-				headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id,
-						true);
-			}
 
+			// Check if the headerToSend needs string or raw written in
+			if (serviceManager.pictureRequested(new String(readMessage))) {
+				headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.RAW, headerObjectReceived.id, false);
+			} else {
+				headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id,
+						false);
+			}
 		}
 		messageToSend = new byte[headerToSend.length + payLoadToSend.length];
 		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
@@ -127,6 +120,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		out.write(messageToSend);
 		lastHeaderSend = headerToSend;
 		lastPayloadSend = payLoadToSend;
+
 		updateObserver(payLoadToSend, headerToSend, false);
 	}
 

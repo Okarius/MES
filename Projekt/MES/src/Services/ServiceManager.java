@@ -1,6 +1,7 @@
 package Services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * This class Manages every Service. It gets the Message Payload and gives it to
@@ -39,11 +40,11 @@ public class ServiceManager extends ArrayList<Service> {
 		String[] payloadArray = payload.split(";");
 		byte[] sendMe = "Invalid Payload".getBytes();
 		debugMsg = "Error;Invalid Payload";
-
+		String msg = "";
 		// Is the first value a number(id)?
 		if (!isFirstValueNumeric(payloadArray[0])) {
 			// non numeric and not services -> error
-			String msg = "Error;NonNumeric ID";
+			msg = "Error;NonNumeric ID";
 			sendMe = msg.getBytes();
 			debugMsg = msg;
 		} else {
@@ -51,9 +52,9 @@ public class ServiceManager extends ArrayList<Service> {
 			// Service id 0 is the request to send a list of all
 			// available services.
 			if (serviceId == 0) {
-				String servicesList = this.getServicesString();
-				sendMe = servicesList.getBytes();
-				debugMsg = "Services Send\n" + servicesList;
+				msg = this.getServicesString();
+				sendMe = msg.getBytes();
+				debugMsg = "Services Send\n" + msg;
 			} else {
 				Service service = getServiceById(serviceId);
 				// Check if id is a actuall Service
@@ -64,17 +65,25 @@ public class ServiceManager extends ArrayList<Service> {
 
 				} else {
 					// Invalid ID -> Send Error Message
-					String msg = "Error;Invalid ID";
+					msg = "Error;Invalid ID";
 					sendMe = msg.getBytes();
+
 					debugMsg = msg;
 				}
 			}
 
 		}
+		byte[] endSymbol = "\0".getBytes();
+		System.out.println(endSymbol.length);
+		sendMe = addElement(sendMe, endSymbol[0]);
 		return sendMe;
 
 	}
-
+	static byte[] addElement(byte[] a, byte e) {
+	    a  = Arrays.copyOf(a, a.length + 1);
+	    a[a.length - 1] = e;
+	    return a;
+	}
 	/**
 	 * Builds the string the Clients get if they ask which services the Server
 	 * Provides

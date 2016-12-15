@@ -1,0 +1,14 @@
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+
+import Services.QuizService;
+
+public class QuizTest {
+
+	@Test
+	public void test() {
+		QuizService qS = new QuizService(0, "quiz");
+	}
+
+}

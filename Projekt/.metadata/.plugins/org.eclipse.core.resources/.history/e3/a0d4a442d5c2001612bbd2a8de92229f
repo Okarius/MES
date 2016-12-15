@@ -1,0 +1,7 @@
+package Model;
+
+public class CSVWorker {
+	public CSVWorker() {
+		// TODO Auto-generated constructor stub
+	}
+}
