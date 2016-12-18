@@ -22,8 +22,10 @@ public class ServiceManager extends ArrayList<Service> {
 	 * Add every Service to this Constructor
 	 */
 	public ServiceManager() {
-
+		this.add(new SecretaryPhoneNumberService(100, "SecretaryPhoneNumberService"));
 		this.add(new PhoneNumberService(101, "PhoneNumberService"));
+		this.add(new QuizService(102, "QuizService"));
+		this.add(new QuizService(103, "PictureService"));
 	}
 
 	/**
@@ -62,32 +64,29 @@ public class ServiceManager extends ArrayList<Service> {
 					// The id exists, so we can use one of our services
 					sendMe = service.getAnswer(payload);
 					debugMsg = service.debugMsg;
-
 				} else {
 					// Invalid ID -> Send Error Message
 					msg = "Error;Invalid ID";
 					sendMe = msg.getBytes();
-
 					debugMsg = msg;
 				}
 			}
 
 		}
 		byte[] endSymbol = "\0".getBytes();
-		System.out.println(endSymbol.length);
 		sendMe = addElement(sendMe, endSymbol[0]);
 		return sendMe;
+	}
 
-	}
 	static byte[] addElement(byte[] a, byte e) {
-	    a  = Arrays.copyOf(a, a.length + 1);
-	    a[a.length - 1] = e;
-	    return a;
+		a = Arrays.copyOf(a, a.length + 1);
+		a[a.length - 1] = e;
+		return a;
 	}
+
 	/**
 	 * Builds the string the Clients get if they ask which services the Server
 	 * Provides
-	 * 
 	 * @return List oft All Services as string.
 	 */
 	private String getServicesString() {

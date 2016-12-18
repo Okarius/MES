@@ -1,8 +1,5 @@
 package Services;
 
-import ServicesHandlers.QuizHandler;
-import ServicesHandlers.UserHandler;
-
 /**
  * 
  * @author Nico

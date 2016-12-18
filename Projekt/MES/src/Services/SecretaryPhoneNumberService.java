@@ -3,8 +3,7 @@ package Services;
 /**
  * The SecretaryPhoneNumberService is the easiest Service The Client hast to
  * send the Services Id If nothing else is send the Payload is correct and the
- * Client gets the Secretaries PhoneNumber
- * 
+ * Client gets the Secretaries PhoneNumber 
  * @author Nikolas+Nico
  *
  */

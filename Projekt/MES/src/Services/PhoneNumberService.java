@@ -1,7 +1,5 @@
 package Services;
 
-import ServicesHandlers.PhoneNumberHandler;
-
 public class PhoneNumberService extends Service {
 
 	private PhoneNumberHandler phoneNumberHandler;
@@ -17,13 +15,11 @@ public class PhoneNumberService extends Service {
 		String[] payloadArray = this.getArgumentsArray(payload);
 		String msg = "";
 		int numberOfArguments = payloadArray.length;
-		System.out.println("numberOFARG" + numberOfArguments);
 		switch (numberOfArguments) {
 		case 0:
 			msg = phoneNumberHandler.getAllNumbers();
 			break;
 		case 1:
-			System.out.println("FML");
 			msg = phoneNumberHandler.deletePhoneNumber(payloadArray[0]);
 			break;
 		case 2:

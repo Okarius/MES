@@ -2,8 +2,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import Services.QuizHandler;
 import Services.QuizService;
-import ServicesHandlers.QuizHandler;
 
 public class QuizTest {
 
