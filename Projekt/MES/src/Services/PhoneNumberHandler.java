@@ -19,7 +19,7 @@ class PhoneBookEntry implements CSVEntry {
 	}
 
 	public PhoneBookEntry(String[] line) {
-		this.firstName = line[0];
+		this.id = line[0];
 		this.firstName = line[1];
 		this.number = line[2];
 	}
@@ -37,15 +37,17 @@ public class PhoneNumberHandler {
 	public PhoneNumberHandler() {
 		csvWorker = new CSVWorker("phoneNumbers.csv");
 		CSVEntries = new ArrayList<>();
-		for (String[] l : csvWorker.readCSV())
-			CSVEntries.add(new PhoneBookEntry(l));
+		for (String[] l : csvWorker.readCSV()){
+			CSVEntries.add(new PhoneBookEntry(l));			
+		}
+
 
 	}
 
 	public String getAllNumbers() { // tut das?
 		String numbers = "";
-		for (PhoneBookEntry e : CSVEntries) {
-			numbers += e.firstName + " : " + e.number + "\n";
+		for (int i = 1; i < CSVEntries.size();i++) {
+			numbers += CSVEntries.get(i).objectToLine() +"\n";
 		}
 		return numbers;
 	}
@@ -55,16 +57,30 @@ public class PhoneNumberHandler {
 			return "No valid FIRSTNAME";
 		} else if (number == "") {
 			return "No valid PHONENUMBER";
-		} else {
+		} 
+		else if(duplicateNumber(number)) {
+			return "This number already exists";
+		}
+		
+		else {
 			CSVEntries.add(new PhoneBookEntry(CSVEntries.size() + 1, firstName, number));
 			csvWorker.writeToCSV(CSVEntries);
 			return "Number added";
 		}
 	}
+	
+	public boolean duplicateNumber(String number) {
+		for(PhoneBookEntry e : CSVEntries) {
+			if(e.number.equals(number)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public String deletePhoneNumber(String id) {
 		for (PhoneBookEntry e : CSVEntries) {
-			String checkMe = e.firstName + " : " + e.number;
+			String checkMe = e.firstName;
 			if (checkMe.equals(id)) {
 				CSVEntries.remove(e);
 				csvWorker.writeToCSV(CSVEntries);

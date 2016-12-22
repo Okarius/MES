@@ -17,6 +17,7 @@ public class ServiceManager extends ArrayList<Service> {
 	// The debug msg will be printed in the view
 	// Dont forget to set it!
 	private String debugMsg;
+	private String pictureServiceId;
 
 	/**
 	 * Add every Service to this Constructor
@@ -26,6 +27,7 @@ public class ServiceManager extends ArrayList<Service> {
 		this.add(new PhoneNumberService(101, "PhoneNumberService"));
 		this.add(new QuizService(102, "QuizService"));
 		this.add(new QuizService(103, "PictureService"));
+		this.pictureServiceId = "103"; //fixed
 	}
 
 	/**
@@ -73,8 +75,6 @@ public class ServiceManager extends ArrayList<Service> {
 			}
 
 		}
-		byte[] endSymbol = "\0".getBytes();
-		sendMe = addElement(sendMe, endSymbol[0]);
 		return sendMe;
 	}
 
@@ -87,6 +87,7 @@ public class ServiceManager extends ArrayList<Service> {
 	/**
 	 * Builds the string the Clients get if they ask which services the Server
 	 * Provides
+	 * 
 	 * @return List oft All Services as string.
 	 */
 	private String getServicesString() {
@@ -134,12 +135,12 @@ public class ServiceManager extends ArrayList<Service> {
 		return null;
 	}
 
+	// TODO nochmal anschauen
 	public boolean pictureRequested(String string) {
-		for (int i = 0; i < this.size(); i++) {
-			if (this.get(i).name.toLowerCase().contains("picture".toLowerCase()))
-				return true;
-
-		}
-		return false;
+		String id = string.split(";")[0];
+		if (id.equals(pictureServiceId))
+			return true;
+		else
+			return false;
 	}
 }

@@ -1,5 +1,7 @@
 package Model;
 
+import Model.HeaderWorker.ContentType;
+
 /**
  * This classes job is it to read and write the header. The functions are Copied
  * from "AndroidGroupe A""
@@ -89,6 +91,7 @@ public class HeaderWorker {
 		newhdrstor.length = extractLengthFromHeader(headerReceivedBytes);
 		newhdrstor.faultyBit = extractFaultyBitFromHeader(headerReceivedBytes);
 		newhdrstor.id = extractIdFromHeader(headerReceivedBytes);
+		newhdrstor.contentType = extractContentTypeFromHeader(headerReceivedBytes);
 		return newhdrstor;
 	}
 
@@ -99,4 +102,5 @@ class HeaderStorage {
 	public short checkSum;
 	public short id;
 	public boolean faultyBit;
+	public ContentType contentType; //TODO
 }

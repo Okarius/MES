@@ -87,6 +87,8 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	 */
 	private void respondToClient(DataOutputStream out, byte[] lineRead, String readMessage) throws IOException {
 
+		byte endsymbol = 0; // TODO
+
 		byte[] headerToSend = new byte[0];
 		byte[] payLoadToSend = new byte[0];
 		byte[] messageToSend = new byte[0];
@@ -101,19 +103,20 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			payLoadToSend = lastPayloadSend;
 		} else { // Last Package tge server sent was ok
 			// Check if Checksum is correct
-			if (headerWorker.isChecksumCorrect(payloadReceivedBytes, headerObjectReceived.checkSum))
+			if (headerWorker.isChecksumCorrect(payloadReceivedBytes, headerObjectReceived.checkSum)) {
 				payLoadToSend = serviceManager.getAnswer(new String(readMessage));
-			else
-				payLoadToSend = "Error;Faulty Checksum".getBytes();
-
-			// Check if the headerToSend needs string or raw written in
-			if (serviceManager.pictureRequested(new String(readMessage))) {
-				headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.RAW, headerObjectReceived.id, false);
+				headerToSend = getHeaderToSend(readMessage, payLoadToSend, headerObjectReceived);
 			} else {
+				payLoadToSend = "Error;Faulty Checksum".getBytes();
 				headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id,
 						false);
 			}
+
 		}
+
+		payLoadToSend = addElement(payLoadToSend, endsymbol); // Add \0 end
+																// symbol
+
 		messageToSend = new byte[headerToSend.length + payLoadToSend.length];
 		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
 		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
@@ -122,6 +125,18 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		lastPayloadSend = payLoadToSend;
 
 		updateObserver(payLoadToSend, headerToSend, false);
+	}
+
+	private byte[] getHeaderToSend(String readMessage, byte[] payLoadToSend, HeaderStorage headerObjectReceived) {
+		byte[] headerToSend = new byte[0];
+		// Check if the headerToSend needs string or raw written in
+		if (serviceManager.pictureRequested(new String(readMessage))) {
+			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.RAW, headerObjectReceived.id, false);
+		} else {
+			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id, false);
+		}
+		return headerToSend;
+
 	}
 
 	private void updateObserver(byte[] payload, byte[] header, boolean from) {
@@ -134,6 +149,12 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	private void changeData(Object data) {
 		setChanged(); // the two methods of Observable class
 		notifyObservers(data);
+	}
+
+	static byte[] addElement(byte[] a, byte e) {
+		a = Arrays.copyOf(a, a.length + 1);
+		a[a.length - 1] = e;
+		return a;
 	}
 
 }
