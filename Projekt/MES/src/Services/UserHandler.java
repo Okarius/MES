@@ -8,7 +8,7 @@ import java.util.ArrayList;
  *
  */
 
-class CSVHighscoreEntry {
+class CSVHighscoreEntry implements CSVEntry {
 	public String gameId;
 	public String playerName;
 	public String highscore;
@@ -23,6 +23,13 @@ class CSVHighscoreEntry {
 		this.gameId = l[0];
 		this.playerName = l[1];
 		this.highscore = l[2];
+	}
+
+	@Override
+	public String objectToLine() {
+		
+			return this.gameId + ";" + this.playerName + ";" + this.highscore;
+
 	}
 }
 
@@ -39,26 +46,38 @@ public class UserHandler {
 
 	}
 
-	public String addPlayer(String playerName) {
+	public String setGameEntry(int highscore,String playerName,int gameId) {
 
 		if (playerName == "") {
 			return "no valid player name";
 		}
-		String gameId = CSVHighscoreEntries.size() + 1 + "";
+		
+		CSVHighscoreEntries.add(new CSVHighscoreEntry(Integer.toString(gameId), playerName, Integer.toString(highscore)));
+		//csvWorker.writeToCSV(CSVHighscoreEntries);
 
-		CSVHighscoreEntries.add(new CSVHighscoreEntry(gameId, playerName, "0"));
-		csvWorker.writeToCSV(CSVHighscoreEntries);
-
-		return "player added";
+		return getHighscoreList();
 	}
 
-	public String getHighscores() {
-		String numbers = "";
+	public String getHighscore(int gameId) {
 		for (CSVHighscoreEntry e : CSVHighscoreEntries) {
-			numbers += e.playerName + " : " + e.highscore + "\n";
+			if(e.gameId.equals(Integer.toString(gameId))) {
+				return e.highscore;
+			}
 		}
-		return numbers;
+		return "highscore not found for this game id";
 	}
+	
+	public String getHighscoreList() {
+		
+		String highscoreList = "";
+		for (int i = 1; i < CSVHighscoreEntries.size();i++) {
+			highscoreList += CSVHighscoreEntries.get(i).playerName + ":" + CSVHighscoreEntries.get(i).highscore + "\n";
+		}
+		
+		return highscoreList;
+	}
+	
+
 
 	public String increaseHighscore(String gameId) {
 		for (CSVHighscoreEntry e : CSVHighscoreEntries) {
