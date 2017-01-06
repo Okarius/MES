@@ -1,13 +1,17 @@
 package Services;
 
-import java.io.BufferedReader;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 
-import javax.imageio.plugins.jpeg.JPEGImageReadParam;
+import javax.imageio.ImageIO;
+/**
+ * 
+ * @author Nico
+ *
+ */
+
 
 public class PictureService extends Service {
 
@@ -17,23 +21,45 @@ public class PictureService extends Service {
 
 	@Override
 	public byte[] getAnswer(String payload) {
-		String[] args = this.getArgumentsArray(payload);
-		byte[] line;
-		byte[] picture;
-		try {
-			BufferedReader br = new BufferedReader(new FileReader("lol.png"));
-			while ((line = br.readLine().getBytes()) != null) {
-				System.out.println("LoL");
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		String[] payloadArray = this.getArgumentsArray(payload);
+		byte[] msg = null;
+		String	debugString = "";
+		
+		switch(payloadArray[0]) {
+		
+		case "0": 
+			msg = readImage();
+			debugString = "Image read";
+			break;
+		
+		default:
+			msg = "Invalid use of service Picture".getBytes();
+			debugString = "Invalid use of service Picture";
+			break;
 		}
-		return null;
+		debugMsg = debugString;
+		return msg;
 	}
 
-	
+	public byte[] readImage() {
+		
+		byte[] imageInByte = null;
+		try{
+			
+			BufferedImage originalImage = 
+		                              ImageIO.read(new File("sand.jpg"));
+					
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write( originalImage, "jpg", baos );
+			baos.flush();
+			imageInByte = baos.toByteArray();
+			baos.close();
+					
+			}catch(IOException e){
+				System.out.println(e.getMessage());
+			}		
+		
+		return imageInByte;
+	}
 
 }
