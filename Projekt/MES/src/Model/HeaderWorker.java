@@ -57,7 +57,7 @@ public class HeaderWorker {
 	}
 
 	private ContentType extractContentTypeFromHeader(byte[] header) {
-		return ContentType.values()[byteToInt(header[6]) & (1 << 7)];
+		return ContentType.values()[(byteToInt(header[6]) & (1 << 7)) >> 7];
 	}
 
 	private int extractLengthFromHeader(byte[] header) {
@@ -102,5 +102,5 @@ class HeaderStorage {
 	public short checkSum;
 	public short id;
 	public boolean faultyBit;
-	public ContentType contentType; //TODO
+	public ContentType contentType; // TODO
 }

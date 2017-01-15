@@ -6,17 +6,15 @@ package Services;
  *
  */
 
-
 public class QuizService extends Service {
 
 	private QuizHandler quizHandler;
 	private UserHandler userHandler;
-	
-	
+
 	public int highscore;
 	int gameId;
 	int currentQuestionId;
-	
+
 	public QuizService(int _id, String _name) {
 		super(_id, _name);
 		quizHandler = new QuizHandler();
@@ -28,52 +26,47 @@ public class QuizService extends Service {
 
 	@Override
 	public byte[] getAnswer(String payload) {
-		
+
 		String[] payloadArray = this.getArgumentsArray(payload);
 		String msg = "";
-		
-		
-	
-		switch (payloadArray[0]) {
 
-		case "0":		//answer
-			if(payloadArray.length < 2) {
+		switch (payloadArray[0]) {
+		case "0": // answer
+			if (payloadArray.length < 2) {
 				msg = "No answer";
-			}
-			else {
+			} else {
 				String correctAnswer = quizHandler.getcorrectAnswerById(Integer.toString(currentQuestionId));
 				String userAnswer = payloadArray[1];
-				if(correctAnswer.equals(userAnswer)) {
+				if (correctAnswer.equals(userAnswer)) {
 					highscore++;
 				}
-			msg = correctAnswer;
-			currentQuestionId++;
+				msg = correctAnswer;
+				currentQuestionId++;
 			}
 			break;
-		
-		case "1":		//end game
-			if(payloadArray.length < 2) {
+
+		case "1": // end game
+			if (payloadArray.length < 2) {
 				msg = "No username";
-			}
-			else {
-				msg = userHandler.setGameEntry(highscore,payloadArray[1], gameId);
+			} else {
+				msg = userHandler.setGameEntry(highscore, payloadArray[1], gameId);
 			}
 			break;
-		
-		case "2":		//request highscore
+
+		case "2": // request highscore
 			msg = userHandler.getHighscore(gameId);
 			break;
-			
-		case "3":		//new game
-			gameId++;			//reset values
+
+		case "3": // new game
+			gameId++; // reset values
 			highscore = 0;
 			currentQuestionId = 0;
 			msg = "1";
 			break;
-		case "4":		//get next question	
-			String question =	quizHandler.getQuestionById(Integer.toString(currentQuestionId));
+		case "4": // get next question
+			String question = quizHandler.getQuestionById(Integer.toString(currentQuestionId));
 			String possibleAnswers = quizHandler.getPossibleAnswersById(Integer.toString(currentQuestionId));
-			msg = question+possibleAnswers;
+			msg = question + possibleAnswers;
 			break;
 		default:
 			msg = "Illegal arguments for Service Quiz";

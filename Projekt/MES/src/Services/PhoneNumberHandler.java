@@ -47,7 +47,7 @@ public class PhoneNumberHandler {
 	public String getAllNumbers() { 
 		String numbers = "";
 		for (int i = 1; i < CSVEntries.size();i++) {
-			numbers += CSVEntries.get(i).objectToLine() +"\n";
+			numbers += CSVEntries.get(i).objectToLine() +"&";
 		}
 		return numbers;
 	}

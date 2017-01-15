@@ -23,10 +23,10 @@ public class ServiceManager extends ArrayList<Service> {
 	 * Add every Service to this Constructor
 	 */
 	public ServiceManager() {
-		this.add(new SecretaryPhoneNumberService(100, "SecretaryPhoneNumberService"));
+	//	this.add(new SecretaryPhoneNumberService(100, "SecretaryPhoneNumberService"));
 		this.add(new PhoneNumberService(101, "PhoneNumberService"));
 		this.add(new QuizService(102, "QuizService"));
-		this.add(new QuizService(103, "PictureService"));
+		this.add(new PictureService(103, "PictureService"));
 		this.pictureServiceId = "103";
 	}
 
@@ -58,7 +58,7 @@ public class ServiceManager extends ArrayList<Service> {
 			if (serviceId == 0) {
 				msg = this.getServicesString();
 				sendMe = msg.getBytes();
-				debugMsg = "Services Send\n" + msg;
+				debugMsg = "Services Send&" + msg;
 			} else {
 				Service service = getServiceById(serviceId);
 				// Check if id is a actuall Service
@@ -94,7 +94,7 @@ public class ServiceManager extends ArrayList<Service> {
 		String sendMe = "";
 		for (int i = 0; i < this.size(); i++) {
 			Service service = this.get(i);
-			sendMe += service.id + ";" + service.name + "\n";
+			sendMe += service.id + ";" + service.name + "&";
 		}
 		return sendMe;
 	}

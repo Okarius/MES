@@ -55,6 +55,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 						int bytes = din.read(buffer);
 						String readMessage = new String(buffer, 8, bytes - 9);
 						respondToClient(out, buffer, readMessage);
+
 					} catch (Exception e) {
 					}
 				} else {
@@ -86,17 +87,13 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	 * @throws IOException
 	 */
 	private void respondToClient(DataOutputStream out, byte[] lineRead, String readMessage) throws IOException {
-
-		byte endsymbol = 0; // TODO
-
 		byte[] headerToSend = new byte[0];
 		byte[] payLoadToSend = new byte[0];
 		byte[] messageToSend = new byte[0];
 		byte[] headerReceived = Arrays.copyOfRange(lineRead, 0, 8);
 		byte[] payloadReceivedBytes = Arrays.copyOfRange(lineRead, 8, lineRead.length);
 		HeaderStorage headerObjectReceived = headerWorker.getHeaderStorageObject(headerReceived);
-
-		updateObserver(payloadReceivedBytes, headerReceived, true);
+		updateObserver(new String(payloadReceivedBytes, "UTF-8") , headerReceived, true);
 		if (headerObjectReceived.faultyBit) { // did the last message failed?
 			// If it failed resend it!
 			headerToSend = lastHeaderSend;
@@ -111,20 +108,16 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 				headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id,
 						false);
 			}
-
 		}
-
-		payLoadToSend = addElement(payLoadToSend, endsymbol); // Add \0 end
-																// symbol
-
+		byte endsymbol = 0; 
+		payLoadToSend = addElement(payLoadToSend,endsymbol); 
 		messageToSend = new byte[headerToSend.length + payLoadToSend.length];
 		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
 		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
 		out.write(messageToSend);
 		lastHeaderSend = headerToSend;
 		lastPayloadSend = payLoadToSend;
-
-		updateObserver(payLoadToSend, headerToSend, false);
+		updateObserver(serviceManager.getLastMsgSend(), headerToSend, false);
 	}
 
 	private byte[] getHeaderToSend(String readMessage, byte[] payLoadToSend, HeaderStorage headerObjectReceived) {
@@ -136,12 +129,11 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			headerToSend = headerWorker.makeHeader(payLoadToSend, ContentType.STRING, headerObjectReceived.id, false);
 		}
 		return headerToSend;
-
 	}
 
-	private void updateObserver(byte[] payload, byte[] header, boolean from) {
+	private void updateObserver(String MsgSend, byte[] header, boolean from) {
 		HeaderStorage headerObjUpdate = headerWorker.getHeaderStorageObject(header);
-		changeData(new InternMessage("PayLoad: " + new String(payload, StandardCharsets.UTF_8), from, this.id));
+		changeData(new InternMessage("PayLoad: " + MsgSend, from, this.id));
 		changeData(new InternMessage(header, from, this.id, headerObjUpdate.length, headerObjUpdate.id,
 				headerObjUpdate.checkSum, headerObjUpdate.faultyBit));
 	}
