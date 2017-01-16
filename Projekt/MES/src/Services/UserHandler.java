@@ -20,6 +20,7 @@ class CSVHighscoreEntry implements CSVEntry {
 	}
 
 	public CSVHighscoreEntry(String[] l) {
+
 		this.gameId = l[0];
 		this.playerName = l[1];
 		this.highscore = l[2];
@@ -48,39 +49,48 @@ public class UserHandler {
 		if (playerName == "") {
 			return "no valid player name";
 		}
-		CSVHighscoreEntries
-				.add(new CSVHighscoreEntry(Integer.toString(gameId), playerName, Integer.toString(highscore)));
-		sortCSVEntries();
-		return getHighscoreList();
+
+		CSVHighscoreEntry thisEntry = insertScore(
+				new CSVHighscoreEntry(Integer.toString(gameId), playerName, Integer.toString(highscore)));
+		csvWorker.writeToCSV(CSVHighscoreEntries);
+		return getHighscoreList() + thisEntry.playerName + ":" + thisEntry.highscore + "&";
 	}
 
-	private void sortCSVEntries() {
-		int n = CSVHighscoreEntries.size();
-		CSVHighscoreEntry temp;
-		for (int i = 0; i < n; i++) {
-			for (int j = 1; j < (n - i); j++) {
-				if (Integer.getInteger(CSVHighscoreEntries.get(j - 1).highscore) > Integer
-						.getInteger(CSVHighscoreEntries.get(j).highscore)) {
-					temp = CSVHighscoreEntries.get(j - 1);
-					CSVHighscoreEntries.set(j - 1, CSVHighscoreEntries.get(j));
-					CSVHighscoreEntries.set(j, temp);
-				}
+	public CSVHighscoreEntry insertScore(CSVHighscoreEntry mscore) {
+		// find insert point
+		ArrayList<CSVHighscoreEntry> before = new ArrayList<CSVHighscoreEntry>();
+		ArrayList<CSVHighscoreEntry> after = new ArrayList<CSVHighscoreEntry>();
+		before.add(CSVHighscoreEntries.get(0));
+		for (int i = 1; i < CSVHighscoreEntries.size(); i++)
+			if (Integer.parseInt(CSVHighscoreEntries.get(i).highscore) > Integer.parseInt(mscore.highscore)) {
+				before.add(CSVHighscoreEntries.get(i));
+			} else {
+				after.add(CSVHighscoreEntries.get(i));
 			}
-		}
+		CSVHighscoreEntries = new ArrayList<>();
+		// over-write values and reorder
+		for (int i = 0; i < before.size(); i++)
+			CSVHighscoreEntries.add(before.get(i));
+		mscore.gameId = CSVHighscoreEntries.size()-1 + "";
+		CSVHighscoreEntries.add(mscore);
+		for (int i = 0; i < after.size(); i++)
+			CSVHighscoreEntries.add(after.get(i));
+		return mscore;
+
 	}
 
-	public String getHighscore(int gameId) {
+	public CSVHighscoreEntry getHighscore(int gameId) {
 		for (CSVHighscoreEntry e : CSVHighscoreEntries) {
 			if (e.gameId.equals(Integer.toString(gameId))) {
-				return e.highscore;
+				return e;
 			}
 		}
-		return "highscore not found for this game id";
+		return null;
 	}
 
 	public String getHighscoreList() {
 		String highscoreList = "";
-		for (int i = 1; i < CSVHighscoreEntries.size(); i++) {
+		for (int i = 1; i <= 10; i++) {
 			highscoreList += CSVHighscoreEntries.get(i).playerName + ":" + CSVHighscoreEntries.get(i).highscore + "&";
 		}
 		return highscoreList;

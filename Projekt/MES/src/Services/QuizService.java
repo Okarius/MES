@@ -54,7 +54,7 @@ public class QuizService extends Service {
 			break;
 
 		case "2": // request highscore
-			msg = userHandler.getHighscore(gameId);
+			msg = userHandler.getHighscoreList();
 			break;
 
 		case "3": // new game
@@ -68,6 +68,8 @@ public class QuizService extends Service {
 			String possibleAnswers = quizHandler.getPossibleAnswersById(Integer.toString(currentQuestionId));
 			msg = question + possibleAnswers;
 			break;
+		case "5":
+			printHighScore();
 		default:
 			msg = "Illegal arguments for Service Quiz";
 			break;
@@ -76,6 +78,11 @@ public class QuizService extends Service {
 		debugMsg = msg;
 		return msg.getBytes();
 
+	}
+
+	private void printHighScore() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
