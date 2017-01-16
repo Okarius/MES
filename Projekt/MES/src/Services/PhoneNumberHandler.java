@@ -65,7 +65,7 @@ public class PhoneNumberHandler {
 		else {
 			CSVEntries.add(new PhoneBookEntry(CSVEntries.size() + 1, firstName, number));
 			csvWorker.writeToCSV(CSVEntries);
-			return "Number added";
+			return "NewNumber;3;" + firstName + ";" + number;
 		}
 	}
 	
