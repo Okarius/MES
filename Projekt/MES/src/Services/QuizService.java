@@ -1,5 +1,13 @@
 package Services;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+
 /**
  * 
  * @author Nico
@@ -70,6 +78,7 @@ public class QuizService extends Service {
 			break;
 		case "5":
 			printHighScore();
+			msg ="Done";
 		default:
 			msg = "Illegal arguments for Service Quiz";
 			break;
@@ -81,8 +90,21 @@ public class QuizService extends Service {
 	}
 
 	private void printHighScore() {
-		// TODO Auto-generated method stub
-		
+		QRCode codeMaker = new QRCode();
+		String qrCodeData = "Hello World!";
+		String filePath = "QRCode.png";
+		String charset = "UTF-8"; // or "ISO-8859-1"
+		Map hintMap = new HashMap();
+		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+
+		try {
+			codeMaker.createQRCode(qrCodeData, filePath, charset, hintMap, 200, 200);
+		} catch (WriterException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

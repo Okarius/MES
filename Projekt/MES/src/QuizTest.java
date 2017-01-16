@@ -26,6 +26,11 @@ public class QuizTest {
 	}
 
 	@Test
+	public void QRCodeTest(){
+		byte[] msg = qS.getAnswer("102;5");
+
+	}
+	@Test
 	public void nextQuestionTest() {
 
 		byte[] msg = qS.getAnswer("102;4");
