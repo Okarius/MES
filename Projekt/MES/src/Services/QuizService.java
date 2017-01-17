@@ -9,6 +9,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 /**
+ * QuizService enables the client to play a quiz game. It uses functions implemented
+ * in classes QuizHandler and UserHandler.
+ * 
  * 
  * @author Nico
  *

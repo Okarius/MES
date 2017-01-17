@@ -27,6 +27,7 @@ public class ServiceManager extends ArrayList<Service> {
 		this.add(new PhoneNumberService(101, "PhoneNumberService"));
 		this.add(new QuizService(102, "QuizService"));
 		this.add(new PictureService(103, "PictureService"));
+		this.add(new PrintService(104, "PrintService"));
 		this.pictureServiceId = "103";
 	}
 

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
+ * QuizHandler holds questions and answers for a quiz game and returns them
+ * if requested.
  * 
  * @author Nico
  *
@@ -63,6 +65,11 @@ public class QuizHandler {
 		}
 	}
 
+	/**
+	 * 
+	 * @param id: id of requested question
+	 * @return String
+	 */
 	public String getQuestionById(String id) {
 		for (CSVQuizEntry e : CSVQuizEntries) {
 			if (e.id.equals(id)) {
@@ -72,6 +79,11 @@ public class QuizHandler {
 		return "Question does not exist";
 	}
 	
+	/**
+	 * 
+	 * @param id: specifies which set of answers is to be returned
+	 * @return  answers as String
+	 */
 	public String getPossibleAnswersById(String id) {
 		String answers = "";
 		for (CSVQuizEntry e : CSVQuizEntries) {
@@ -84,7 +96,12 @@ public class QuizHandler {
 		return "Answers not found";
 	}
 	
-
+	/**
+	 * 
+	 * @param id: specifies which answer is requested
+	 * @return answer as String
+	 */
+	
 	public String getcorrectAnswerById(String id) {
 		for (CSVQuizEntry e : CSVQuizEntries) {
 			if (e.id.equals(id)) {

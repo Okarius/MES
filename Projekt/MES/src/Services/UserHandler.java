@@ -3,6 +3,8 @@ package Services;
 import java.util.ArrayList;
 
 /**
+ * This class manages players of the quiz game. It allows to insert new game
+ * scores, request a highscore list or a highscore belonging to a specified game.
  * 
  * @author Nico
  *
@@ -45,6 +47,13 @@ public class UserHandler {
 
 	}
 
+	/**
+	 * 
+	 * @param highscore
+	 * @param playerName
+	 * @param gameId: unique identifier for each game
+	 * @return	Top 10 highscore entries + highscore and user of this game
+	 */
 	public String setGameEntry(int highscore, String playerName, int gameId) {
 		if (playerName == "") {
 			return "no valid player name";
@@ -56,6 +65,13 @@ public class UserHandler {
 		return getHighscoreList() + thisEntry.playerName + ":" + thisEntry.highscore + "&";
 	}
 
+	/**
+	 * inserts a game entry, depending on the score of the player
+	 * 
+	 * @param mscore: entry to be inserted
+	 * @return
+	 */
+	
 	public CSVHighscoreEntry insertScore(CSVHighscoreEntry mscore) {
 		// find insert point
 		ArrayList<CSVHighscoreEntry> before = new ArrayList<CSVHighscoreEntry>();
@@ -79,6 +95,11 @@ public class UserHandler {
 
 	}
 
+	/**
+	 * 
+	 * @param gameId
+	 * @return game entry 
+	 */
 	public CSVHighscoreEntry getHighscore(int gameId) {
 		for (CSVHighscoreEntry e : CSVHighscoreEntries) {
 			if (e.gameId.equals(Integer.toString(gameId))) {
@@ -88,6 +109,10 @@ public class UserHandler {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return all highscores as String
+	 */
 	public String getHighscoreList() {
 		String highscoreList = "";
 		for (int i = 1; i <= 10; i++) {
@@ -96,6 +121,11 @@ public class UserHandler {
 		return highscoreList;
 	}
 
+	/**
+	 * increases highscore for current game
+	 * @param gameId: current game id
+	 * @return
+	 */
 	public String increaseHighscore(String gameId) {
 		for (CSVHighscoreEntry e : CSVHighscoreEntries) {
 			if (e.gameId.equals(gameId)) {

@@ -3,6 +3,8 @@ package Services;
 import java.util.ArrayList;
 
 /**
+ * The PhoneNumberHandler manages the telephone book. It is possible to add and delete
+ * numbers etc.
  * 
  * @author nico
  *
@@ -44,6 +46,11 @@ public class PhoneNumberHandler {
 
 	}
 
+	/**
+	 *
+	 * @return all phone numbers as String
+	 */
+	
 	public String getAllNumbers() { 
 		String numbers = "";
 		for (int i = 1; i < CSVEntries.size();i++) {
@@ -52,6 +59,12 @@ public class PhoneNumberHandler {
 		return numbers;
 	}
 
+	/**
+	 * 
+	 * @param firstName: name to be added
+	 * @param number: number to be added
+	 * @return NewNumber;3; and added entry
+	 */
 	public String addNewNumber(String firstName, String number) {
 		if (firstName == "") {
 			return "No valid FIRSTNAME";
@@ -69,6 +82,11 @@ public class PhoneNumberHandler {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param number: number that may already exist
+	 *
+	 */
 	public boolean duplicateNumber(String number) {
 		for(PhoneBookEntry e : CSVEntries) {
 			if(e.number.equals(number)) {
@@ -78,6 +96,11 @@ public class PhoneNumberHandler {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param id: id of the phonebook entry to be deleted
+	 * @return String, success information
+	 */
 	public String deletePhoneNumber(String id) {
 		for (PhoneBookEntry e : CSVEntries) {
 			String checkMe = e.firstName;

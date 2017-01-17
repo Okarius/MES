@@ -1,5 +1,13 @@
 package Services;
 
+/**
+ * The PhoneNumberService allows usage of functions from PhoneNumberHandler.
+ * 
+ * @author nico
+ *
+ */
+
+
 public class PhoneNumberService extends Service {
 
 	private PhoneNumberHandler phoneNumberHandler;
