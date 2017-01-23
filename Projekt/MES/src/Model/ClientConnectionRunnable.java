@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.Observable;
 
@@ -32,9 +33,13 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	private HeaderWorker headerWorker;
 	private byte[] lastHeaderSend;
 	private byte[] lastPayloadSend;
+	private int requestCount;
+	private long intervallBegin;
+	Thread t;
 
 	public ClientConnectionRunnable(StreamConnection connection, int id) {
 		conn = connection;
+		intervallBegin = System.currentTimeMillis();
 		serviceManager = new ServiceManager();
 		headerWorker = new HeaderWorker();
 		this.id = id;
@@ -47,6 +52,15 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 			DataInputStream din = new DataInputStream(conn.openInputStream());
 			DataOutputStream out = new DataOutputStream(conn.openOutputStream());
 			while (true) {
+				// Dos Defense. if the server gets more than 10message/2seconds
+				if (intervallBegin + 2000 < System.currentTimeMillis()) {
+					intervallBegin = System.currentTimeMillis();
+					requestCount = 0;
+				}
+				// Then shut down connection
+				if (requestCount > 10)
+					t.stop();
+
 				byte[] buffer = new byte[(int) Math.pow(10, 3)];
 				// String readMessage;
 				if (din.available() > 0) {
@@ -55,11 +69,9 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 						int bytes = din.read(buffer);
 						String readMessage = new String(buffer, 8, bytes - 9);
 						respondToClient(out, buffer, readMessage);
-
+						requestCount++;
 					} catch (Exception e) {
 					}
-				} else {
-					// Thread.sleep(100);
 				}
 			}
 		} catch (Exception e) {
@@ -70,7 +82,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	}
 
 	public void startThis() {
-		Thread t = new Thread(this);
+		t = new Thread(this);
 		t.start();
 	}
 
@@ -93,7 +105,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		byte[] headerReceived = Arrays.copyOfRange(lineRead, 0, 8);
 		byte[] payloadReceivedBytes = Arrays.copyOfRange(lineRead, 8, lineRead.length);
 		HeaderStorage headerObjectReceived = headerWorker.getHeaderStorageObject(headerReceived);
-		updateObserver(new String(payloadReceivedBytes, "UTF-8") , headerReceived, true);
+		updateObserver(new String(payloadReceivedBytes, "UTF-8"), headerReceived, true);
 		if (headerObjectReceived.faultyBit) { // did the last message failed?
 			// If it failed resend it!
 			headerToSend = lastHeaderSend;
@@ -109,8 +121,8 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 						false);
 			}
 		}
-		byte endsymbol = 0; 
-		payLoadToSend = addElement(payLoadToSend,endsymbol); 
+		byte endsymbol = 0;
+		payLoadToSend = addElement(payLoadToSend, endsymbol);
 		messageToSend = new byte[headerToSend.length + payLoadToSend.length];
 		System.arraycopy(headerToSend, 0, messageToSend, 0, headerToSend.length);
 		System.arraycopy(payLoadToSend, 0, messageToSend, headerToSend.length, payLoadToSend.length);
