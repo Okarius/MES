@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * This class Manages every Service. It gets the Message Payload and gives it to
+ * Manages every Service. It gets the Message Payload and gives it to
  * the correct Service. The Service returns then the Answer and the
  * ServiceManager passes the answer to the ClientConnection. To implement a new
  * Service add it to the ServiceManagers Constructor.
@@ -33,7 +33,7 @@ public class ServiceManager extends ArrayList<Service> {
 
 	/**
 	 * getAnswer(String) returns the Payload which will be send to the Client.
-	 * The fnkt gets called in the ClientConnection Runnable whenever the Server
+	 * The function gets called in the ClientConnection Runnable whenever the Server
 	 * Receives a MSG. GetAnswer(String) checks if the Payload of the MSG if
 	 * valid Otherwise it creates a fitting Errormessage.
 	 * 

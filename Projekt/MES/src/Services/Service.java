@@ -30,8 +30,8 @@ public abstract class Service {
 
 	/**
 	 * getAnswer(String) returns the Payload the Client will receive. The
-	 * Services deveid on their own how to handle requests. In this fnkt should
-	 * the debugMsg set.
+	 * Services decide on their own how to handle requests. The debugMsg has to
+	 * be set here
 	 * 
 	 * @param payload
 	 * @return payload answer to send the client
@@ -39,8 +39,8 @@ public abstract class Service {
 	public abstract byte[] getAnswer(String payload);
 
 	/**
-	 * Gets the Payload and removes the Services id. Gives the service an
-	 * Array of every Argument.
+	 * Gets the Payload and removes the Services id. Gives the service an Array
+	 * of every Argument.
 	 * 
 	 * @param payload
 	 * @return ArgumentsArray without the Services Id.
