@@ -6,16 +6,20 @@ import javax.swing.JButton;
 import Model.Server;
 
 /**
- * This implements an ActionListener. It is the ActionListener for the Views
- * Buttons. It controlls both Server and View.
- * 
- * @author Nikolas+Nico
+ * The Controller Class implements an ActionListener. It is the ActionListener for the Views
+ * Buttons. 
+ * It holds the Server(Model) and View as Attributes. 
+ * The Controller updates the View using the Server.
+ * @author Nikolas
  *
  */
 public class Controller implements ActionListener {
 	Server server;
 	View view;
-
+	/**
+	 * This Constructed initializes the Server and View.
+	 * The Server get set up receive ready. And receives the View as an Observer
+	 */
 	public Controller() {
 		server = new Server();
 		view = new View(this);
@@ -24,14 +28,14 @@ public class Controller implements ActionListener {
 	}
 
 	/**
-	 * A Butto got pressed, Decide what to do.
+	 * A Button got clicked, update View.
+	 * @param  ActionEvent e -> ButtonClicked.
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String name = ((JButton) e.getSource()).getName();
 		String[] names = name.split(";");
 		switch (names[0]) {
-
 		case "viewConnectionButton":
 			view.viewConnection(server.getStorage());
 			break;

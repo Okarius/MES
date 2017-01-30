@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * The CSVWorker Reads the CSVFiles and returns a ArrayList of String[]. The
- * String[] is the CSV line splitted by ";" Those String[] are used in the
+ * The CSVWorker reads CSVFiles and returns a ArrayList of String[]. The
+ * String[] is the CSV line split by ";" Those String[] are used in the
  * ServiceHandlers. Furthermore is this Class able to write back every possible
- * CSVEntry. Possible CSVEntries are with example QuizEntry, PhoneBookEntries
+ * List of CSVEntries. Possible CSVEntries are with example QuizEntry, PhoneBookEntries
  * 
  * @author Niki
  */
@@ -28,8 +28,8 @@ public class CSVWorker {
 	 * are used in the Services. They are used to read and work with the
 	 * CSV-File.
 	 * 
-	 * @param CSVEntries
-	 *            a CSVEntry is an Interface.
+	 * @param CSVEntries ArrayList<T>  T has always  the type CSVEntry
+	 *         
 	 */
 	public <T> void writeToCSV(ArrayList<T> CSVEntries) {
 		String csvString = "";
@@ -48,7 +48,7 @@ public class CSVWorker {
 
 	}
 	/**
-	 * 
+	 * Used to readCSV files
 	 * @return String[] list of split rows
 	 */
 	public ArrayList<String[]> readCSV() {

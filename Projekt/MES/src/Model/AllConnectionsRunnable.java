@@ -13,8 +13,11 @@ import javax.microedition.io.StreamConnectionNotifier;
 import Container.InternMessage;
 
 /**
- * This Runnable is used in ther servers waitThread. This runable waits for new
- * connections. If a new connection get created it
+ * This Runnable is used in the Servers waitThread. This runnable waits for new
+ * connections. If a BT-Device tries to set up a connection this class creates a new Thread 
+ * which represents the Connection. Thus we have one Connection Thread for each device.
+ * This Class Observers its Connection Threads and gets Observed by the Server.
+ * @author Niki,Nico
  *
  */
 public class AllConnectionsRunnable extends Observable implements Runnable, Observer {
@@ -37,7 +40,11 @@ public class AllConnectionsRunnable extends Observable implements Runnable, Obse
 		waitForConnection();
 	}
 
-	/** Waiting for connection from devices */
+
+	/**
+	 * This Function is Opens Streams and Waits for devices to Connect with the Server
+	 * If a Device Connects a new Thread gets oppened. This Threads is the Connection
+	 */
 	private void waitForConnection() {
 		// retrieve the local Bluetooth device object
 		LocalDevice local = null;
@@ -75,8 +82,8 @@ public class AllConnectionsRunnable extends Observable implements Runnable, Obse
 	}
 
 	/**
-	 * Update Server by pushing incoming InternMessage to it, Or by informing
-	 * the Server about new Connections.
+	 * Update Server by pushing incoming InternMessage to it, 
+	 * Or by informingthe Server about new Connections.
 	 */
 	@Override
 	public void update(Observable o, Object arg) {

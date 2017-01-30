@@ -1,8 +1,0 @@
-package Model;
-
-public class CSVWorker {
-	String path;
-	public CSVWorker(String path) {
-		// TODO Auto-generated constructor stub
-	}
-}

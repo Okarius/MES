@@ -10,7 +10,7 @@ import Container.Storage;
  * (ConnectionThread). It observes this Thread and gets Observed by the view.
  * The Controller holds an reference of the Server. When the server gets an
  * Update by the ConnectionThread he notifies the View. To notify the view the
- * Server uses his "Storage" objekt. The Storage holds and manages every massage
+ * Server uses his "Storage" Object. The Storage holds and manages every massage
  * send by a client and a lot of debug msgs.
  *
  */
@@ -36,8 +36,10 @@ public class Server extends Observable implements Observer {
 	}
 
 	/**
-	 * Gets update by his Thread. The server passes the threads InternMassage to
+	 * The server get updated by its allConnectionRunable which it observes.
+	 * The server passes the threads InternMassage to
 	 * his Storage and afterwards updates the View.
+	 * @param Object arg this variable has the type InternMassage
 	 */
 	@Override
 	public void update(Observable o, Object arg) {

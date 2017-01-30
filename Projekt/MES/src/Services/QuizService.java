@@ -81,7 +81,8 @@ public class QuizService extends Service {
 			msg = question + possibleAnswers;
 			break;
 		case "5":
-			printHighScore("QRCode");
+			PrintWorker printWorker = new PrintWorker();
+			printWorker.printPayload(userHandler.getHighscoreList().replace("&", "\n"));
 			msg = "Done";
 		default:
 			msg = "Illegal arguments for Service Quiz";
@@ -90,25 +91,6 @@ public class QuizService extends Service {
 		}
 		debugMsg = msg;
 		return msg.getBytes();
-
-	}
-
-	private void printHighScore(String fileName) {
-		QRCode codeMaker = new QRCode();
-		String qrCodeData = userHandler.getHighscoreList().replace("&", "\n");
-		String filePath = fileName+".png";
-		String charset = "UTF-8"; // or "ISO-8859-1"
-		Map hintMap = new HashMap();
-		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-
-		try {
-			codeMaker.createQRCode(qrCodeData, filePath, charset, hintMap, 200, 200);
-		} catch (WriterException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		PrintWorker printWorker = new PrintWorker("fileName");
 
 	}
 

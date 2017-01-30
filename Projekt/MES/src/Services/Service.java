@@ -1,11 +1,11 @@
 package Services;
 
 /**
- * This abstract class is used to Implement every Service. Every Service should
- * have specific methods Those are specified here. Every Service gets an id and
+ * This abstract class is used to implement every Service. Every Service should
+ * have specific methods those are specified here. Every Service gets an id and
  * name. The id correspondence to their position in an ArrayList created in the
  * ServiceManager. The id and name will be send to the client so it knows which
- * services are available. Every Implemented Service hast to extend this class
+ * services are available. Every Implemented Service has to extend this class
  * "Service". The Services get the MSGs Payload and decide what to answer. If
  * the Service gets wrong arguments they will return an ErrorMsg
  * 
@@ -39,7 +39,7 @@ public abstract class Service {
 	public abstract byte[] getAnswer(String payload);
 
 	/**
-	 * Gets the Payload and removes the Services id. Thus gets the service an
+	 * Gets the Payload and removes the Services id. Gives the service an
 	 * Array of every Argument.
 	 * 
 	 * @param payload

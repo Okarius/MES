@@ -3,8 +3,8 @@ package Model;
 import Model.HeaderWorker.ContentType;
 
 /**
- * This classes job is it to read and write the header. The functions are Copied
- * from "AndroidGroupe A""
+ * This classes job is it to read and write the header. 
+ * The functions are Copied from "AndroidGruppe A"
  * 
  * @author Niki+Nico
  *

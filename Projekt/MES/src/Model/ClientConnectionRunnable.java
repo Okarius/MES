@@ -15,12 +15,12 @@ import Model.HeaderWorker.ContentType;
 import Services.ServiceManager;
 
 /**
- * This Runnable is used in a thread which respresends a singel Client-Server
- * connection. They are spereated by an id. have their own StreamConnection and
+ * This Runnable is used in a thread which represents a single Client-Server
+ * connection. They are separated by an id. have their own StreamConnection and
  * every connection has its own serviceManager to create the answers. This
  * Runnable is used to create Threads in the AllConnectionsRunnable. Every
  * connection gets its own Thread. This Runnable is Observed by the
- * AllConnectionsRunanble. It passes every Msg sent and received forward.
+ * AllConnectionsRunanble. It passes every message sent and received forward.
  * 
  * @author Nikolas+Nico
  *
@@ -44,7 +44,10 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		headerWorker = new HeaderWorker();
 		this.id = id;
 	}
-
+	/**
+	 * Function representing the Connection
+	 * It receives messages and calls the functions to process incoming messages
+	 */
 	@Override
 	public void run() {
 		changeData(new InternMessage("New Connection, ID: ", this.id));
@@ -87,15 +90,15 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	}
 
 	/**
-	 * This funktion handles every incoming msg and deceides how to answer. It
-	 * also send the Msgs thus it gets the DataOutputStream. What the Server
+	 * This function handles every incoming message and decides how to answer. It
+	 * also send the message thus it gets the DataOutputStream. What the Server
 	 * answers is decided by the ServiceMangaer which uses the Service itself.
 	 * After the Answer is created the Observer(AllConnectionsRunnable) will be
 	 * informed about this message
 	 * 
-	 * @param out
-	 * @param lineRead
-	 * @param readMessage
+	 * @param out This is the Stream on which the message will be seand
+	 * @param lineRead the received message as byte[]
+	 * @param readMessage received message as string
 	 * @throws IOException
 	 */
 	private void respondToClient(DataOutputStream out, byte[] lineRead, String readMessage) throws IOException {
@@ -142,6 +145,8 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 		}
 		return headerToSend;
 	}
+	
+	
 
 	private void updateObserver(String MsgSend, byte[] header, boolean from) {
 		HeaderStorage headerObjUpdate = headerWorker.getHeaderStorageObject(header);
