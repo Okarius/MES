@@ -72,7 +72,7 @@ public class View implements Observer {
 	 * Thus its able to update the Dynamic buttons. This function gets the
 	 * "Storage" from the server. The storage holds every message the server sent
 	 * and received also it contains some debug messages like "New Connection"
-	 *  @param Object arg1 This value has always the type Storage.
+	 *  @param arg1 This value has always the type Storage.
 	 */
 	@Override
 	public void update(Observable arg0, Object arg1) {
@@ -94,7 +94,7 @@ public class View implements Observer {
 	 * This function gets called whenever a new connection appears or an old one
 	 * disappears. The buttons this function creates are used to decide which
 	 * connection will be printed. It creates every Button new.
-	 * @param Storage storage holds every Message send and received by the server
+	 * @param storage holds every Message send and received by the server
 	 */
 	public void updateDynamicButtons(Storage storage) {
 		InternMessage lastMsg = storage.getLastMsg();

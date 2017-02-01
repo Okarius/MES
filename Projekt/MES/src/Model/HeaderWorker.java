@@ -3,8 +3,8 @@ package Model;
 import Model.HeaderWorker.ContentType;
 
 /**
- * This classes job is it to read and write the header. 
- * The functions are Copied from "AndroidGruppe A"
+ * This classes job is it to read and write the header. The functions are Copied
+ * from "AndroidGruppe A"
  * 
  * @author Niki+Nico
  *
@@ -78,13 +78,17 @@ public class HeaderWorker {
 		return (byteToInt(header[6]) & faultyBit) == faultyBit;
 	}
 
-	/**
-	 * Casts unsigned bytes to unsigned integers.
-	 */
 	private int byteToInt(byte b) {
 		return (b) & 0xFF;
 	}
 
+	/**
+	 * Becomes an Byte-Array which contains the header. This header is read and
+	 * saved in a "HeaderStorage" object. This object saves every values.
+	 * 
+	 * @param headerReceivedBytes
+	 * @return headerValues
+	 */
 	public HeaderStorage getHeaderStorageObject(byte[] headerReceivedBytes) {
 		HeaderStorage newhdrstor = new HeaderStorage();
 		newhdrstor.checkSum = extractChecksumFromHeader(headerReceivedBytes);
@@ -97,6 +101,12 @@ public class HeaderWorker {
 
 }
 
+/**
+ * Contains the Header attributes used to save and read the values.
+ * 
+ * @author niki
+ *
+ */
 class HeaderStorage {
 	public int length;
 	public short checkSum;

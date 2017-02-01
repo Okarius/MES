@@ -6,13 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * QuizHandler holds questions and answers for a quiz game and returns them
- * if requested.
- * 
- * @author Nico
- *
- */
+
 
 class CSVQuizEntry implements CSVEntry {
 	public String id;
@@ -49,7 +43,13 @@ class CSVQuizEntry implements CSVEntry {
 	}
 
 }
-
+/**
+ * QuizHandler holds questions and answers for a quiz game and returns them
+ * if requested.
+ * 
+ * @author Nico
+ *
+ */
 public class QuizHandler {
 	private ArrayList<CSVQuizEntry> CSVQuizEntries;
 	private CSVWorker csvWorker;

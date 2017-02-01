@@ -2,13 +2,6 @@ package Services;
 
 import java.util.ArrayList;
 
-/**
- * This class manages players of the quiz game. It allows to insert new game
- * scores, request a highscore list or a highscore belonging to a specified game.
- * 
- * @author Nico
- *
- */
 
 class CSVHighscoreEntry implements CSVEntry {
 	public String gameId;
@@ -33,6 +26,13 @@ class CSVHighscoreEntry implements CSVEntry {
 		return this.gameId + ";" + this.playerName + ";" + this.highscore;
 	}
 }
+/**
+ * This class manages players of the quiz game. It allows to insert new game
+ * scores, request a highscore list or a highscore belonging to a specified game.
+ * 
+ * @author Nico
+ *
+ */
 
 public class UserHandler {
 	private ArrayList<CSVHighscoreEntry> CSVHighscoreEntries;

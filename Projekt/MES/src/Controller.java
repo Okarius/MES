@@ -18,7 +18,7 @@ public class Controller implements ActionListener {
 	View view;
 	/**
 	 * This Constructed initializes the Server and View.
-	 * The Server get set up receive ready. And receives the View as an Observer
+	 * The Server receive ready. And receives the View as an Observer
 	 */
 	public Controller() {
 		server = new Server();

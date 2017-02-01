@@ -3,10 +3,12 @@ package Container;
 import java.util.ArrayList;
 
 /**
- * The Storage is the servers Message Managing object. The Server Class holds an
- * Reference of the Storage. The Server passes every incomig InternMessage to
- * the Storage. Thus the storage menages the InterMessages. The storage is then
- * Used by the view to update the GUI.
+ * The Storage is the servers Message managing class. The Server has a storage
+ * Attribute. The Server passes every incoming InternMessage to the Storage.
+ * Thus the storage manages the InterMessages. The storage is then Used by the
+ * view to update the GUI.
+ * 
+ * @author niki
  */
 public class Storage {
 	private InternMessage lastMsg;
@@ -22,10 +24,8 @@ public class Storage {
 	}
 
 	/**
-	 * When ever the server get a new InternMessage it passes it to the storage.
-	 * Thus the storages job is it to save the message correctly. debuggMsgs get
-	 * saved in the order they arrive. And ConnectionMsgs have to get checked if
-	 * they are new or old Connections.
+	 * Saves incoming InternMessage correctly ConnectionMsgs have to get checked
+	 * if they are new or old Connections.
 	 */
 	public void newConnectionMessage(InternMessage msg) {
 		lastMsg = msg;
@@ -39,9 +39,9 @@ public class Storage {
 		}
 
 	}
-	
-	public void writeLogFiles(int id){
-		
+
+	public void writeLogFiles(int id) {
+
 	}
 
 	// ************ Funktion View reads to update******************//

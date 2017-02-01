@@ -2,13 +2,7 @@ package Services;
 
 import java.util.ArrayList;
 
-/**
- * The PhoneNumberHandler manages the telephone book. It is possible to add and delete
- * numbers etc.
- * 
- * @author nico
- *
- */
+
 class PhoneBookEntry implements CSVEntry {
 	public String firstName;
 	public String number;
@@ -31,7 +25,13 @@ class PhoneBookEntry implements CSVEntry {
 	}
 
 }
-
+/**
+ * The PhoneNumberHandler manages the telephone book. It is possible to add and delete
+ * numbers etc.
+ * 
+ * @author nico
+ *
+ */
 public class PhoneNumberHandler {
 	private ArrayList<PhoneBookEntry> CSVEntries;
 	private CSVWorker csvWorker;

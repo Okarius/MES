@@ -2,18 +2,16 @@ package Container;
 
 /**
  * The InternMessage class is used to pass debugMesages and messages sent or
- * received by clients comfortable to the server. It Conatins a lot of important
- * informations. If its the firstMsg thus a new Connection got created The
- * connection Id to pringt the Msgs seperate for every connection If its the
- * lastMsg thus this connection got stopped. Also its contains if its a DebugMsg
- * or a ConnectionMsg. Connection Msgs are msgs the Server Received or Sent to a
- * Client While DebugMsgs are msgs We use to Debug the System. Those are also
- * printed in the view.
+ * received by clients comfortable to the server. It contains a lot of important
+ * informations. Those InternMessages are used by the Connections in
+ * notifyObservers(); If its the firstMsg thus a new Connection got created The
+ * connection Id to print the messages separate for every connection 
  * 
- *
+ * @author niki
+ * 
  */
 public class InternMessage {
-	
+
 	public String msg;
 	public boolean firstMsg, from;
 	public int id;
@@ -23,8 +21,11 @@ public class InternMessage {
 	 * Constructor for Connections
 	 * 
 	 * @param _msg
+	 *            debugMsg
 	 * @param _from
+	 *            if true string contains "From: " else "To: "
 	 * @param _id
+	 *            id to find fitting connection
 	 */
 	public InternMessage(String _msg, boolean _from, int _id) {
 		msg = _msg;
@@ -40,7 +41,8 @@ public class InternMessage {
 	}
 
 	/**
-	 * Constructor for new Connections
+	 * Constructor for new Connections A new connection, thus firstMsg = true
+	 * Necessary to update Storage (newDevice) and View(newButton)
 	 * 
 	 * @param _msg
 	 * @param _from
@@ -52,36 +54,36 @@ public class InternMessage {
 		firstMsg = true;
 		lastMsg = false;
 	}
-	
-	public InternMessage connectionGone(){
+	/**
+	 * A connection shuts down.
+	 * lastMsg = true
+	 * @return
+	 */
+	public InternMessage connectionGone() {
 		this.lastMsg = true;
 		this.firstMsg = false;
 		return this;
 	}
-	
 
 	public void setAsLastMsg() {
 		lastMsg = true;
 		firstMsg = false;
 
 	}
+
 	public void setAsFirstMsg() {
 		lastMsg = false;
 		firstMsg = true;
 
 	}
 
-
-	
-
 	/**
 	 * Constructor to print headers nicely
 	 * 
-	 * @param headerToSend
 	 * @param _from
 	 * @param _id
 	 */
-	public InternMessage(byte[] headerToSend, boolean _from, int _id, int length, int msgID, int checksum,
+	public InternMessage( boolean _from, int _id, int length, int msgID, int checksum,
 			boolean lastMsgCorrect) {
 		msg = "Header: \n";
 		msg += "Length: " + length + "\n";

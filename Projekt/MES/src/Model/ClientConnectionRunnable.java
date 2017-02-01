@@ -151,7 +151,7 @@ public class ClientConnectionRunnable extends Observable implements Runnable {
 	private void updateObserver(String MsgSend, byte[] header, boolean from) {
 		HeaderStorage headerObjUpdate = headerWorker.getHeaderStorageObject(header);
 		changeData(new InternMessage("PayLoad: " + MsgSend, from, this.id));
-		changeData(new InternMessage(header, from, this.id, headerObjUpdate.length, headerObjUpdate.id,
+		changeData(new InternMessage(from, this.id, headerObjUpdate.length, headerObjUpdate.id,
 				headerObjUpdate.checkSum, headerObjUpdate.faultyBit));
 	}
 

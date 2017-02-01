@@ -3,19 +3,21 @@ package Container;
 import java.util.ArrayList;
 
 /**
- * ConnectedDevices Manage the msgs recevied or sent on an connections. It is an
- * ArrayList containing ConenctionStorage. Thus it contains every message per
- * connection. And is able to add Msgs as String to the correct connection. It
- * gets the Msgs as an InternMessage. This class is important for the view to
- * print the msgs of a connection.
+ * Manages the received messages. It is an ArrayList containing
+ * ConenctionStorage. Thus it contains every message per connection. And is able
+ * to add messages as String to the correct connection. It gets the messages as
+ * an InternMessage. This class is important for the view to print the messages
+ * of a connection.
+ * 
+ * @author niki
  */
 public class ConnectedDevices extends ArrayList<ConnectionStorage> {
 
 	/**
-	 * Add a msg to a specific connection
+	 * Adds a message to a specific connection
 	 * 
-	 * @param INternMessage
-	 *            msg this msg contains the connections id
+	 * @param msg
+	 *            this message contains the connections id and content
 	 */
 	public void newMsgById(InternMessage msg) {
 		for (int i = 0; i < this.size(); i++)
@@ -61,6 +63,7 @@ class ConnectionStorage {
 
 	private int id;
 	private ArrayList<String> msgs;
+
 	public ConnectionStorage(int _id) {
 		id = _id;
 		msgs = new ArrayList<>();

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Manages every Service. It gets the Message Payload and gives it to
- * the correct Service. The Service returns then the Answer and the
- * ServiceManager passes the answer to the ClientConnection. To implement a new
- * Service add it to the ServiceManagers Constructor.
+ * Manages every Service and extends ArrayList<Service>. It gets the Message
+ * Payload and gives it to the correct Service. The Service returns then the
+ * Answer and the ServiceManager passes the answer to the ClientConnection. To
+ * implement a new Service add it to the ServiceManagers Constructor.
  * 
  * @author Nikolas
  */
@@ -23,7 +23,8 @@ public class ServiceManager extends ArrayList<Service> {
 	 * Add every Service to this Constructor
 	 */
 	public ServiceManager() {
-	//	this.add(new SecretaryPhoneNumberService(100, "SecretaryPhoneNumberService"));
+		// this.add(new SecretaryPhoneNumberService(100,
+		// "SecretaryPhoneNumberService"));
 		this.add(new PhoneNumberService(101, "PhoneNumberService"));
 		this.add(new QuizService(102, "QuizService"));
 		this.add(new PictureService(103, "PictureService"));
@@ -33,9 +34,9 @@ public class ServiceManager extends ArrayList<Service> {
 
 	/**
 	 * getAnswer(String) returns the Payload which will be send to the Client.
-	 * The function gets called in the ClientConnection Runnable whenever the Server
-	 * Receives a MSG. GetAnswer(String) checks if the Payload of the MSG if
-	 * valid Otherwise it creates a fitting Errormessage.
+	 * The function gets called in the ClientConnection Runnable whenever the
+	 * Server Receives a MSG. GetAnswer(String) checks if the Payload of the MSG
+	 * if valid Otherwise it creates a fitting Errormessage.
 	 * 
 	 * @param payload
 	 * @return byte[] to send it to the client

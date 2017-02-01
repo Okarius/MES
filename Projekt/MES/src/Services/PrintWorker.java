@@ -1,10 +1,4 @@
-/**
- * This class is used from The services.
- * It can be used to Create and Print QRCodes. 
- * To create QRCodes it uses its inner class QRCode
- * Source: http://www.java2s.com/Code/Java/2D-Graphics-GUI/PrintanImagetoprintdirectly.htm
- * @author Niki
- */
+
 package Services;
 
 import java.io.File;
@@ -39,7 +33,13 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-
+/**
+ * This class is used by services.
+ * It can be used to Create and Print QRCodes. 
+ * To create QRCodes it uses its inner class QRCode
+ * Source: http://www.java2s.com/Code/Java/2D-Graphics-GUI/PrintanImagetoprintdirectly.htm
+ * @author Niki
+ */
 public class PrintWorker {
 	public static String filePath = "PrintMe";
 
@@ -67,7 +67,7 @@ public class PrintWorker {
 	}
 
 	/**
-	 * Function can get called from Services. It creates the QR-Code and
+	 * Gets called from Services. It creates the QR-Code and
 	 * initializes the printing
 	 * 
 	 * @param payload
